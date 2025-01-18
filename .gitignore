@@ -1,4 +1,7 @@
 *.pdf
 *.html
 
-bin/
+out/
+.bloop
+.metals
+.vscode
