@@ -5,4 +5,7 @@ object snippets extends JavaModule {
 
     def javacOptions = Seq("--enable-preview", "--source", "23", "-Xlint:all")
 
+    def forkArgs = Seq("--enable-preview")
+
+    def mainClass = Some("Test")
 }
