@@ -64,6 +64,46 @@ Aprovechando las nuevas herramientas del lenguaje
 
 ---
 
+# Gherkin
+
+```gherkin
+Feature:  Login functionality of social networking site Mastodon. 
+Given:  I am a mastodon user. 
+When: I enter username as username. 
+And I enter the password as the password 
+Then I should be redirected to the home page of mastodon
+```
+
+---
+
+# SQL
+
+```sql
+select 
+  people.name, 
+  people.age 
+from people 
+where people.age > 18 
+order by people.age ASC
+```
+
+---
+
+# HTML
+
+```html
+<html>
+  <head>
+    <title>Example</title>
+  </head>
+  <body>
+    <h1>Hello World</h1>
+  </body>
+</html>
+```
+
+---
+
 # DSLs internos
 
 * Están implementados como parte del propio lenguage donde se van a usar.
@@ -81,11 +121,11 @@ Aprovechando las nuevas herramientas del lenguaje
 
 # Por qué Java?
 
-* Soy javero
-* Novedades Java 21
-  * Records
-  * Pattern matching
-  * Sealed interfaces
+* Soy javero.
+* Novedades Java 21:
+  * Records.
+  * Pattern matching.
+  * Sealed interfaces.
 * Mi [charla del año pasado](https://www.youtube.com/watch?v=RbLkJXagQXw).
 
 ---

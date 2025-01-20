@@ -1,15 +1,14 @@
 import static java.util.stream.Collectors.joining;
 
 import java.util.List;
-import java.util.Map;
 
-interface Siquel {
+interface SqlDsl {
+
+    interface Table {
+        String name();
+    }
 
     sealed interface Field<T> {
-        record Value<T>(T value) implements Field<T> {}
-        record TableField<T>(String table, String name) implements Field<T> {}
-        record Alias<T>(Field<T> field, String name) implements Field<T> {}
-
         default String toSql() {
             return switch (this) {
                 case Value(var value) -> String.valueOf(value);
@@ -19,15 +18,11 @@ interface Siquel {
         }
     }
 
-    interface Table {
-        String name();
-    }
+    record Value<T>(T value) implements Field<T> {}
+    record TableField<T>(String table, String name) implements Field<T> {}
+    record Alias<T>(Field<T> field, String name) implements Field<T> {}
 
     sealed interface Filter<T> {
-        record Equal<T>(Field<T> left, Field<T> right) implements Filter<T> {}
-        record GreaterThan<T>(Field<T> left, Field<T> right) implements Filter<T> {}
-        record LessThan<T>(Field<T> left, Field<T> right) implements Filter<T> {}
-
         default String toSql() {
             return switch (this) {
                 case Equal(var left, var right) -> left.toSql() + " = " + right.toSql();
@@ -36,6 +31,10 @@ interface Siquel {
             };
         }
     }
+
+    record Equal<T>(Field<T> left, Field<T> right) implements Filter<T> {}
+    record GreaterThan<T>(Field<T> left, Field<T> right) implements Filter<T> {}
+    record LessThan<T>(Field<T> left, Field<T> right) implements Filter<T> {}
 
     enum Order {
         ASC, DESC
@@ -53,18 +52,6 @@ interface Siquel {
 
     static <T> Sorting<T> desc(Field<T> field) {
         return new Sorting<>(field, Order.DESC);
-    }
-
-    record Record(Map<Field<?>, Object> values) {
-
-        @SuppressWarnings("unchecked")
-        <T> T get(Field<T> field) {
-            return (T) values.get(field);
-        }
-    }
-
-    record Result(List<Record> record) {
-
     }
 
     record Query(
@@ -89,7 +76,9 @@ interface Siquel {
                 var sql = "select ";
 
                 if (!filters.isEmpty()) {
-                    sql += fields.stream().map(Field::toSql).collect(joining(", ")) + " from " + table.name();
+                    sql += fields.stream().map(Field::toSql).collect(joining(", "));
+                } else {
+                    sql += "*";
                 }
 
                 sql += " from " + table.name();
@@ -104,10 +93,6 @@ interface Siquel {
 
                 return sql;
             }
-
-            Result execute() {
-                return new Result(null);
-            }
         }
 
     static Query select(Field<?>... fields) {
@@ -115,19 +100,19 @@ interface Siquel {
     }
 
     static <T> Field<T> field(String table, String name) {
-        return new Field.TableField<>(table, name);
+        return new TableField<>(table, name);
     }
 
     static <T> Filter<T> equal(Field<T> field, T value) {
-        return new Filter.Equal<>(field, new Field.Value<T>(value));
+        return new Equal<>(field, new Value<T>(value));
     }
 
     static <T> Filter<T> gt(Field<T> field, T value) {
-        return new Filter.GreaterThan<>(field, new Field.Value<T>(value));
+        return new GreaterThan<>(field, new Value<T>(value));
     }
 
     static <T> Filter<T> lt(Field<T> field, T value) {
-        return new Filter.LessThan<>(field, new Field.Value<T>(value));
+        return new LessThan<>(field, new Value<T>(value));
     }
 
     final class People implements Table {
@@ -151,9 +136,5 @@ interface Siquel {
         .sorting(asc(PEOPLE.AGE));
 
         System.out.println(query.toSql());
-
-        var result = query.execute();
-
-        System.out.println(result);
     }
 }
