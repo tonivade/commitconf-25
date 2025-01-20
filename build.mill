@@ -1,6 +1,5 @@
 package build
 import mill._, javalib._
-import mill.define.ModuleRef
 
 object `package` extends RootModule with JavaModule {
 
@@ -12,5 +11,13 @@ object `package` extends RootModule with JavaModule {
 
     def forkArgs = Seq("--enable-preview")
 
-    def mainClass = Some("Test")
+    def runHtml() = runMain("HtmlDsl")
+    def runSql() = runMain("SqlDsl")
+    def runResume() = runMain("ResumeDsl")
+
+    def run(args: Task[Args] = Task.Anon(Args())) = Task.Command {
+        runHtml()()
+        runSql()()
+        runResume()()
+    }
 }
