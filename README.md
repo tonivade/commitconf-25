@@ -14,12 +14,8 @@ Para compilar los snippets necesitarás tener instalado [sdkman](https://sdkman.
 sdk env install
 ```
 
-En lugar de gradle o maven uso [mill](https://mill-build.org/) como herramienta de building. Se trata de una alternativa mucho más ligera y sencilla. Este comando compilará el código fuente de los snippets.
+En lugar de gradle o maven uso [mill](https://mill-build.org/) como herramienta de building. Se trata de una alternativa mucho más ligera y sencilla. Este comando compilará y ejecutará el código fuente de los snippets.
 
 ```sh
-./mill snippets.compile
-```
-
-```sh
-./mill snippets.run
+./mill run
 ```

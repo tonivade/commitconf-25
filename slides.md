@@ -1,19 +1,22 @@
 ---
 marp: true
 title: Construyendo DSLs en Java
+description: Aprovechando las nuevas herramientas del lenguaje
 theme: gaia
 footer: #commitconf 2025
 author: Antonio Muñoz
-color: #fff
 transition: fade-out
-backgroundImage: url('https://tonivade.es/commitconf24/images/background.png')
+backgroundColor: #eee
+color: #000
 ---
 
 # Construyendo DSLs en Java
 
-<!-- _backgroundImage: url('https://tonivade.es/commitconf24/images/frontpage.png') -->
+Aprovechando las nuevas herramientas del lenguaje
 
-_Antonio Muñoz_
+<!-- _color: #fff -->
+<!-- _footer: _Antonio Muñoz_ -->
+<!-- _backgroundImage: url('https://images.unsplash.com/photo-1484417894907-623942c8ee29?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') -->
 
 ---
 
@@ -25,6 +28,71 @@ _Antonio Muñoz_
     - Mastodon: @tonivade@jvm.social
     - Github: https://github.com/tonivade
     - Email: me@tonivade.es
+
+---
+
+# Empecemos por el principio
+
+* Qué es un DSL?
+* Domain Specific Language.
+* Está especializado para un dominio específico.
+
+---
+
+# Ventajas
+
+* Vocabulario reducido.
+* Sintaxis concisa.
+* Mayor expresividad.
+* Mayor productividad.
+
+---
+
+# Tipos de DSLs
+
+* Externos.
+* Internos o embebidos.
+
+---
+
+# DSLs externos
+
+* Están implementados con un interprete/compilador independiente.
+* Ejemplos: Gherkin, SQL, HTML.
+* Más complejos de implementar.
+* Pero más potentes.
+
+---
+
+# DSLs internos
+
+* Están implementados como parte del propio lenguage donde se van a usar.
+* Ejemplos: JOOQ, LINQ.
+* Más sencillos de implementar.
+* Están limitados a las capacidades del lenguage anfitrión.
+
+---
+
+# De qué voy a hablar hoy?
+
+* DSLs internos implementados en Java.
+
+---
+
+# Por qué Java?
+
+* Soy javero
+* Novedades Java 21
+  * Records
+  * Pattern matching
+  * Sealed interfaces
+* Mi [charla del año pasado](https://www.youtube.com/watch?v=RbLkJXagQXw).
+
+---
+
+# Un DSL sencillo
+
+* Patrón Builder
 
 ---
 
@@ -42,28 +110,16 @@ _Antonio Muñoz_
 
 # Documentación Oficial
 
-- [Switch Expressions](https://docs.oracle.com/en/java/javase/21/language/switch-expressions.html)
-- [Record Classes](https://docs.oracle.com/en/java/javase/21/language/records.html)
-- [Sealed Classes](https://docs.oracle.com/en/java/javase/21/language/sealed-classes-and-interfaces.html)
-- [Pattern Matching](https://docs.oracle.com/en/java/javase/21/language/pattern-matching.html)
-- [Unnamed variables and patterns](https://docs.oracle.com/en/java/javase/22/language/unnamed-variables-and-patterns.html)
 
 ---
 
 # Artículos / Videos
 
-- [Data Oriented Programming](https://www.infoq.com/articles/data-oriented-programming-java/) Brian Goetz
-- [Data Oriented Programming with Java 21](https://www.youtube.com/watch?v=8FRU_aGY4mY) Nicolai Parlog
-- [Java 23: Restoring the Balance with Primitive Patterns](https://nipafx.dev/inside-java-newscast-66/) Nicolai Parlog
-- [Java Language Update 2023](https://www.youtube.com/watch?v=TIHx6MNt79Y) Brian Goetz
-- [Why ADTs are important?](https://www.youtube.com/watch?v=LkqTLJK2API) Bartosz Milewski
 
 ---
 
 # Enlaces
 
-- Slides HTML: https://tonivade.es/commitconf25/slides.html
-- Slides PDF: https://tonivade.es/commitconf25/slides.pdf
 
 <!-- TODO:
 
