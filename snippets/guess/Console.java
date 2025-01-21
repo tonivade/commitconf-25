@@ -5,7 +5,7 @@ sealed interface Console<T> extends Program<T> {
   record WriteLine(String line) implements Console<Void> {}
   record ReadLine() implements Console<String> {}
 
-  static Console<Void> writeLine(String line) {
+  static Program<Void> writeLine(String line) {
     return new WriteLine(line);
   }
 

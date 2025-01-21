@@ -9,11 +9,11 @@ sealed interface Game<T> extends Program<T> {
   record RandomNumber() implements Game<Void> {}
   record CheckNumber(int number) implements Game<Boolean> {}
 
-  static Game<Void> randomNumber() {
+  static Program<Void> randomNumber() {
     return new RandomNumber();
   }
 
-  static Game<Boolean> checkNumber(int number) {
+  static Program<Boolean> checkNumber(int number) {
     return new CheckNumber(number);
   }
 
