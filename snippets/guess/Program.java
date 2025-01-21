@@ -53,7 +53,7 @@ public sealed interface Program<T> permits Console, Game, Program.AndThen {
     return loop();
   }
 
-  public static Program<Void> playOrExit(String answer) {
+  static Program<Void> playOrExit(String answer) {
     if (answer.equalsIgnoreCase("y")) {
       return randomNumber().andThen(loop());
     }
