@@ -15,7 +15,7 @@ sealed interface Console<T> extends Program<T> {
 
   @Override
   @SuppressWarnings({ "preview", "unchecked" })
-  default T eval() {
+  default T eval(State state) {
     return (T) switch (this) {
       case WriteLine(var line) -> {
         System.console().println(line);

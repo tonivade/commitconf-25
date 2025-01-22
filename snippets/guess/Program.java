@@ -7,12 +7,12 @@ import static guess.Game.randomNumber;
 
 import java.util.function.Function;
 
-public sealed interface Program<T> permits Console, Game, Program.AndThen {
+sealed interface Program<T> permits Game, Console, Program.AndThen {
 
   record AndThen<T, R>(Program<T> current, Function<T, Program<R>> next) implements Program<R> {
     @Override
-    public R eval() {
-      return next.apply(current.eval()).eval();
+    public R eval(State state) {
+      return next.apply(current.eval(state)).eval(state);
     }
   };
 
@@ -24,11 +24,11 @@ public sealed interface Program<T> permits Console, Game, Program.AndThen {
     return new AndThen<>(this, next);
   }
 
-  default T eval() {
+  default T eval(State state) {
     return switch (this) {
-      case Console<T> console -> console.eval();
-      case Game<T> guess -> guess.eval();
-      case AndThen<?, T> andThen -> andThen.eval();
+      case AndThen<?, T> andThen -> andThen.eval(state);
+      case Console<T> console -> console.eval(state);
+      case Game<T> game -> game.eval(state);
     };
   }
 
@@ -53,19 +53,19 @@ public sealed interface Program<T> permits Console, Game, Program.AndThen {
     return loop();
   }
 
-  static Program<Void> playOrExit(String answer) {
+  public static Program<Void> playOrExit(String answer) {
     if (answer.equalsIgnoreCase("y")) {
       return randomNumber().andThen(loop());
     }
     return writeLine("Bye!");
   }
 
-  static void main(String... args) {
+  public static void main(String... args) {
     var program = prompt("What's your name?")
         .andThen(Program::sayHello)
         .andThen(prompt("Do you want to play a game? (Y/y)"))
         .andThen(Program::playOrExit);
 
-    program.eval();
+    program.eval(new State());
   }
 }
