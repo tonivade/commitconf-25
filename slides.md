@@ -107,7 +107,7 @@ order by people.age ASC
 # DSLs internos
 
 * Están implementados como parte del propio lenguage donde se van a usar.
-* Ejemplos: JOOQ, LINQ.
+* Ejemplos: JOOQ, gradle, Assertj.
 * Más sencillos de implementar.
 * Están limitados a las capacidades del lenguage anfitrión.
 
@@ -132,7 +132,46 @@ order by people.age ASC
 
 # Un DSL sencillo
 
-* Patrón Builder
+* ResumeDSL
+
+---
+
+# Patrón builder
+
+* Fluent API.
+* Son aburridos de implementar.
+* Librerías:
+  * Lombok.
+  * RecordBuilder.
+  * Immutables.
+
+--- 
+
+# Smart constructors
+
+* Los news son aburridos.
+* Permiten ser más concisos.
+
+---
+
+# Un DSL mas dinámico
+
+* Console
+* Combinar operaciones
+
+---
+
+# Un DSL mas divertido
+
+* Game
+* Añadir estado
+
+---
+
+# Qué falta?
+
+* Extension methods
+* Closures
 
 ---
 
