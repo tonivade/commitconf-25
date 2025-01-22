@@ -6,16 +6,35 @@ Gracias a las potentes características que **Java** ha introducido recientement
 
 Exploraremos paso a paso las novedades del lenguaje, y aplicaremos estas técnicas con ejemplos prácticos para construir un DSL que no solo sea expresivo, sino también funcional y eficiente. Verás cómo un DSL puede transformar la manera en que representamos problemas complejos y cómo, al final de la charla, podrás empezar a darle vida a tus propias herramientas para que hagan cosas realmente útiles.
 
-## Compilar snippets
+## Generar slides y compilar snippets
 
-Para compilar los snippets necesitarás tener instalado [sdkman](https://sdkman.io/). Este comando instalará la versión de java necesaria para compilar los snippets
+Necesitas tener instalado [sdkman](https://sdkman.io/).
+Este comando instalará la versión de java necesaria para compilar los snippets.
 
 ```sh
 sdk env install
 ```
 
-En lugar de gradle o maven uso [mill](https://mill-build.org/) como herramienta de building. Se trata de una alternativa mucho más ligera y sencilla. Este comando compilará y ejecutará el código fuente de los snippets.
+Y [docker](https://www.docker.com/) funcionando en tu máquina ya que se usa la imagen docker de marp para generar las slides.
+
+Finalmente ejecutando este script generará las slides y compilará los snippets
 
 ```sh
-./mill run
+./build.sh
 ```
+
+## Probar snippets
+
+Se pueden probar algunos snippets que contienen un main de esta manera:
+
+```sh
+java --enable-preview snippets/Clase.java
+```
+
+O abrir una sesión de jshell:
+
+```sh
+jshell --enable-preview snippets/Clase.java
+```
+
+Una vez dentro de la shell se puede probar la clase.

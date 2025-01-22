@@ -1,7 +1,5 @@
 *.pdf
 *.html
 
-out/
-.bloop
 .metals
 .vscode
