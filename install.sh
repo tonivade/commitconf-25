@@ -2,6 +2,7 @@
 
 set -Eeuo pipefail
 
+sudo mkdir -p /srv/http/commitconf25/images
 sudo cp slides.{html,pdf} /srv/http/commitconf25/
 sudo cp images/*.jpg /srv/http/commitconf25/images/
 
