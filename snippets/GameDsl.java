@@ -1,51 +1,50 @@
 import java.util.Random;
 import java.util.function.Function;
 
-sealed interface Game<T> {
+sealed interface GameDsl<T> {
 
-  record WriteLine(String line) implements Game<Void> {}
-  record ReadLine() implements Game<String> {}
+  record WriteLine(String line) implements GameDsl<Void> {}
+  record ReadLine() implements GameDsl<String> {}
 
-  record RandomNumber() implements Game<Void> {}
-  record CheckNumber(int number) implements Game<Boolean> {}
+  record RandomNumber() implements GameDsl<Void> {}
+  record CheckNumber(int number) implements GameDsl<Boolean> {}
 
-  record Done<T>(T value) implements Game<T> {}
-  record AndThen<T, R>(Game<T> current, Function<T, Game<R>> next) implements Game<R> {
-    @Override
-    public R eval(State state) {
+  record Done<T>(T value) implements GameDsl<T> {}
+  record AndThen<T, R>(GameDsl<T> current, Function<T, GameDsl<R>> next) implements GameDsl<R> {
+    public R safeEval(State state) {
       return next.apply(current.eval(state)).eval(state);
     }
   };
 
-  static Game<Void> writeLine(String line) {
+  static GameDsl<Void> writeLine(String line) {
     return new WriteLine(line);
   }
 
-  static Game<String> readLine() {
+  static GameDsl<String> readLine() {
     return new ReadLine();
   }
 
-  static Game<Void> randomNumber() {
+  static GameDsl<Void> randomNumber() {
     return new RandomNumber();
   }
 
-  static Game<Boolean> checkNumber(int number) {
+  static GameDsl<Boolean> checkNumber(int number) {
     return new CheckNumber(number);
   }
 
-  static <T> Game<T> done(T value) {
+  static <T> GameDsl<T> done(T value) {
     return new Done<T>(value);
   }
 
-  default <R> Game<R> map(Function<T, R> mapper) {
+  default <R> GameDsl<R> map(Function<T, R> mapper) {
     return andThen(mapper.andThen(Done::new));
   }
 
-  default <R> Game<R> andThen(Game<R> next) {
+  default <R> GameDsl<R> andThen(GameDsl<R> next) {
     return andThen(_ -> next);
   }
 
-  default <R> Game<R> andThen(Function<T, Game<R>> next) {
+  default <R> GameDsl<R> andThen(Function<T, GameDsl<R>> next) {
     return new AndThen<>(this, next);
   }
 
@@ -63,33 +62,33 @@ sealed interface Game<T> {
       }
       case CheckNumber(var number) -> state.check(number);
       case Done<T>(var value) -> value;
-      case AndThen<?, T> andThen -> andThen.eval(state);
+      case AndThen<?, T> andThen -> andThen.safeEval(state);
     };
   }
 
-  static Game<String> prompt(String question) {
+  static GameDsl<String> prompt(String question) {
     return writeLine(question).andThen(readLine());
   }
 
-  static Game<Void> sayHello(String name) {
+  static GameDsl<Void> sayHello(String name) {
     return writeLine("Hello " + name);
   }
 
-  static Game<Void> loop() {
+  static GameDsl<Void> loop() {
     return prompt("Enter a number")
       .map(Integer::parseInt)
-      .andThen(Game::checkNumber)
-      .andThen(Game::winOrContinue);
+      .andThen(GameDsl::checkNumber)
+      .andThen(GameDsl::winOrContinue);
   }
 
-  static Game<Void> winOrContinue(boolean answer) {
+  static GameDsl<Void> winOrContinue(boolean answer) {
     if (answer) {
       return writeLine("YOU WIN!!");
     }
     return loop();
   }
 
-  static Game<Void> playOrExit(String answer) {
+  static GameDsl<Void> playOrExit(String answer) {
     if (answer.equalsIgnoreCase("y")) {
       return randomNumber().andThen(loop());
     }
@@ -98,9 +97,9 @@ sealed interface Game<T> {
 
   static void main(String... args) {
     var program = prompt("What's your name?")
-        .andThen(Game::sayHello)
+        .andThen(GameDsl::sayHello)
         .andThen(prompt("Do you want to play a game? (Y/y)"))
-        .andThen(Game::playOrExit);
+        .andThen(GameDsl::playOrExit);
 
     program.eval(new State());
   }

@@ -1,32 +1,32 @@
 import java.util.function.Function;
 
-sealed interface Console {
+sealed interface ConsoleDsl {
 
-  record WriteLine(String line) implements Console {}
-  record ReadLine() implements Console {}
-  record AndThen(Console current, Function<String, Console> next) implements Console {};
+  record WriteLine(String line) implements ConsoleDsl {}
+  record ReadLine() implements ConsoleDsl {}
+  record AndThen(ConsoleDsl current, Function<String, ConsoleDsl> next) implements ConsoleDsl {};
 
-  default Console andThen(Console next) {
+  default ConsoleDsl andThen(ConsoleDsl next) {
     return andThen(_ -> next);
   }
 
-  default Console andThen(Function<String, Console> next) {
+  default ConsoleDsl andThen(Function<String, ConsoleDsl> next) {
     return new AndThen(this, next);
   }
 
-  static Console writeLine(String line) {
+  static ConsoleDsl writeLine(String line) {
     return new WriteLine(line);
   }
 
-  static Console readLine() {
+  static ConsoleDsl readLine() {
     return new ReadLine();
   }
 
-  static Console prompt(String question) {
+  static ConsoleDsl prompt(String question) {
     return writeLine(question).andThen(readLine());
   }
 
-  static Console sayHello(String name) {
+  static ConsoleDsl sayHello(String name) {
     return writeLine("Hello " + name);
   }
 
@@ -43,7 +43,7 @@ sealed interface Console {
   }
 
   static void main(String... args) {
-    var program = prompt("What's your name?").andThen(Console::sayHello);
+    var program = prompt("What's your name?").andThen(ConsoleDsl::sayHello);
 
     program.eval();
   }
