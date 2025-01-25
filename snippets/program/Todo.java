@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
 
-sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
+sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
 
   interface Repository {
     void create(TodoEntity todo);
@@ -35,36 +35,65 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
     }
   }
 
-  record Create<S extends Repository>(TodoEntity todo) implements Todo<S, Void> {}
-  record Update<S extends Repository>(int id, UnaryOperator<TodoEntity> update) implements Todo<S, Void> {}
-  record FindOne<S extends Repository>(int id) implements Todo<S, Optional<TodoEntity>> {}
-  record FindAll<S extends Repository>() implements Todo<S, List<TodoEntity>> {}
-  record DeleteOne<S extends Repository>(int id) implements Todo<S, Void> {}
-  record DeleteAll<S extends Repository>() implements Todo<S, Void> {}
+  record Create(TodoEntity todo) implements Todo<Void> {}
+  record Update(int id, UnaryOperator<TodoEntity> update) implements Todo<Void> {}
+  record FindOne(int id) implements Todo<Optional<TodoEntity>> {}
+  record FindAll() implements Todo<List<TodoEntity>> {}
+  record DeleteOne(int id) implements Todo<Void> {}
+  record DeleteAll() implements Todo<Void> {}
+
+  @SuppressWarnings("unchecked")
+  static <S extends Repository> Program<S, Void> create(TodoEntity todo) {
+    return (Program<S, Void>) new Create(todo);
+  }
+
+  @SuppressWarnings("unchecked")
+  static <S extends Repository> Program<S, Void> update(int id, UnaryOperator<TodoEntity> update) {
+    return (Program<S, Void>) new Update(id, update);
+  }
+
+  @SuppressWarnings("unchecked")
+  static <S extends Repository> Program<S, Optional<TodoEntity>> findOne(int id) {
+    return (Program<S, Optional<TodoEntity>>) new FindOne(id);
+  }
+
+  @SuppressWarnings("unchecked")
+  static <S extends Repository> Program<S, List<TodoEntity>> findAll() {
+    return (Program<S, List<TodoEntity>>) new FindAll();
+  }
+
+  @SuppressWarnings("unchecked")
+  static <S extends Repository> Program<S, Void> deleteOne(int id) {
+    return (Program<S, Void>) new DeleteOne(id);
+  }
+
+  @SuppressWarnings("unchecked")
+  static <S extends Repository> Program<S, Void> deleteAll() {
+    return (Program<S, Void>) new DeleteAll();
+  }
 
   @Override
   @SuppressWarnings("unchecked")
-  default T eval(S repository) {
+  default T eval(Repository repository) {
     return (T) switch (this) {
-      case Create<?>(TodoEntity todo) -> {
+      case Create(TodoEntity todo) -> {
         repository.create(todo);
         yield null;
       }
-      case Update<?>(int id, UnaryOperator<TodoEntity> update) -> {
+      case Update(int id, UnaryOperator<TodoEntity> update) -> {
         repository.update(id, update);
         yield null;
       }
-      case FindOne<?>(int id) -> repository.find(id);
-      case FindAll<?> _ -> repository.findAll();
-      case DeleteOne<?>(int id) -> {
+      case FindOne(int id) -> repository.find(id);
+      case FindAll _ -> repository.findAll();
+      case DeleteOne(int id) -> {
         repository.delete(id);
         yield null;
       }
-      case DeleteAll<?> _ -> {
+      case DeleteAll _ -> {
         repository.deleteAll();
         yield null;
       }
-      default -> null;
     };
   }
 
@@ -84,10 +113,10 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
   static Program<TodoContext, Void> executeAction(int action) {
     return switch (action) {
       case 1 -> createTodo();
-      case 2 -> findAll();
+      case 2 -> findAllTodos();
       case 3 -> findTodo();
       case 4 -> deleteTodo();
-      case 5 -> deleteAll();
+      case 5 -> deleteAllTodos();
       case 6 -> markCompleted();
       case 7 -> writeLine("Bye!");
       default -> throw new IllegalArgumentException();
@@ -102,15 +131,15 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
     return Console.<TodoContext>prompt("Enter id").map(Integer::parseInt);
   }
 
-  static Program<TodoContext, Void> findAll() {
-    return new FindAll<TodoContext>()
+  static Program<TodoContext, Void> findAllTodos() {
+    return Todo.<TodoContext>findAll()
       .map(list -> list.stream().map(Object::toString).collect(joining("\n")))
       .andThen(Console::writeLine)
       .andThen(loop());
   }
 
-  static Program<TodoContext, Void> deleteAll() {
-    return new DeleteAll<TodoContext>()
+  static Program<TodoContext, Void> deleteAllTodos() {
+    return Todo.<TodoContext>deleteAll()
       .andThen(writeLine("all todo removed"))
       .andThen(loop());
   }
@@ -118,21 +147,21 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
   static Program<TodoContext, Void> createTodo() {
     return map2(promptId(), promptTitle(),
         (id, title) -> new TodoEntity(id, title, NOT_COMPLETED))
-      .andThen(Create::new)
+      .andThen(Todo::create)
       .andThen(writeLine("todo created"))
       .andThen(loop());
   }
 
   static Program<TodoContext, Void> deleteTodo() {
     return promptId()
-      .andThen(DeleteOne::new)
+      .andThen(Todo::deleteOne)
       .andThen(writeLine("todo removed"))
       .andThen(loop());
   }
 
   static Program<TodoContext, Void> findTodo() {
     return promptId()
-      .andThen(FindOne::new)
+      .andThen(Todo::findOne)
       .map(optional -> optional.map(Object::toString).orElse("not found"))
       .andThen(Console::writeLine)
       .andThen(loop());
@@ -140,7 +169,7 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
 
   static Program<TodoContext, Void> markCompleted() {
     return promptId()
-      .andThen(id -> new Update<>(id, entity -> entity.withState(COMPLETED)))
+      .andThen(id -> update(id, entity -> entity.withState(COMPLETED)))
       .andThen(writeLine("todo compmleted"))
       .andThen(loop());
   }

@@ -1,21 +1,23 @@
 package program;
 
-sealed interface Console<S extends Console.Service, T> extends Program.Dsl<S, T> {
+sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
 
   interface Service {
     void writeLine(String line);
     String readLine();
   }
 
-  record WriteLine<S extends Service>(String line) implements Console<S, Void> {}
-  record ReadLine<S extends Service>() implements Console<S, String> {}
+  record WriteLine(String line) implements Console<Void> {}
+  record ReadLine() implements Console<String> {}
 
-  static <S extends Service> Console<S, Void> writeLine(String line) {
-    return new WriteLine<>(line);
+  @SuppressWarnings("unchecked")
+  static <S extends Service> Program<S, Void> writeLine(String line) {
+    return (Program<S, Void>) new WriteLine(line);
   }
 
-  static <S extends Service> Console<S, String> readLine() {
-    return new ReadLine<>();
+  @SuppressWarnings("unchecked")
+  static <S extends Service> Program<S, String> readLine() {
+    return (Program<S, String>) new ReadLine();
   }
 
   static <S extends Service> Program<S, String> prompt(String question) {
@@ -29,13 +31,13 @@ sealed interface Console<S extends Console.Service, T> extends Program.Dsl<S, T>
 
   @Override
   @SuppressWarnings("unchecked")
-  default T eval(S service) {
+  default T eval(Service service) {
     return (T) switch (this) {
-      case WriteLine<?>(var line) -> {
+      case WriteLine(var line) -> {
         service.writeLine(line);
         yield null;
       }
-      case ReadLine<?> _ -> service.readLine();
+      case ReadLine _ -> service.readLine();
     };
   }
 

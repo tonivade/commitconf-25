@@ -5,33 +5,35 @@ import static program.Console.writeLine;
 
 import java.util.Random;
 
-sealed interface Game<S extends Game.State, T> extends Program.Dsl<S, T> {
+sealed interface Game<T> extends Program.Dsl<Game.State, T> {
 
   interface State {
     void next();
     boolean check(int number);
   }
 
-  record RandomNumber<S extends State>() implements Game<S, Void> {}
-  record CheckNumber<S extends State>(int number) implements Game<S, Boolean> {}
+  record RandomNumber() implements Game<Void> {}
+  record CheckNumber(int number) implements Game<Boolean> {}
 
-  static <S extends State> Game<S, Void> randomNumber() {
-    return new RandomNumber<>();
+  @SuppressWarnings("unchecked")
+  static <S extends State> Program<S, Void> randomNumber() {
+    return (Program<S, Void>) new RandomNumber();
   }
 
-  static <S extends State> Game<S, Boolean> checkNumber(int number) {
-    return new CheckNumber<>(number);
+  @SuppressWarnings("unchecked")
+  static <S extends State> Program<S, Boolean> checkNumber(int number) {
+    return (Program<S, Boolean>) new CheckNumber(number);
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  default T eval(S state) {
+  default T eval(State state) {
     return (T) switch (this) {
-      case RandomNumber<?> _ -> {
+      case RandomNumber _ -> {
         state.next();
         yield null;
       }
-      case CheckNumber<?>(var number) -> state.check(number);
+      case CheckNumber(var number) -> state.check(number);
     };
   }
 
