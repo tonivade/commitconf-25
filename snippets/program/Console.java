@@ -38,4 +38,28 @@ sealed interface Console<S extends Console.Service, T> extends Program.Dsl<S, T>
       case ReadLine<?> _ -> service.readLine();
     };
   }
+
+  static Program<Context, String> whatsYourName() {
+    return prompt("What's your name?");
+  }
+
+  static void main(String... args) {
+    var program = whatsYourName().andThen(Console::sayHello);
+
+    program.eval(new Context());
+  }
+
+  final class Context implements Console.Service {
+
+    @SuppressWarnings("preview")
+    @Override
+    public void writeLine(String line) {
+      System.console().println(line);
+    }
+
+    @Override
+    public String readLine() {
+      return System.console().readLine();
+    }
+  }
 }
