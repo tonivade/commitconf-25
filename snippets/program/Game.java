@@ -3,7 +3,6 @@ package program;
 import static program.Console.prompt;
 import static program.Console.writeLine;
 
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 sealed interface Game<T> extends Program.Dsl<Game.State, T> {
