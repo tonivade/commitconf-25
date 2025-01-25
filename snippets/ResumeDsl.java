@@ -1,30 +1,24 @@
+import static java.lang.System.console;
+
 import java.util.List;
 
 interface ResumeDsl {
 
-  record Date(int month, int year) {
-  }
+  record Date(int month, int year) {}
 
-  record Phone(String number) {
-  }
+  record Phone(String number) {}
 
-  record Email(String email) {
-  }
+  record Email(String email) {}
 
-  record Contact(Phone phone, Email email) {
-  }
+  record Contact(Phone phone, Email email) {}
 
-  record Position(String name) {
-  }
+  record Position(String name) {}
 
-  record Location(String city, String country) {
-  }
+  record Location(String city, String country) {}
 
-  record Institution(String name) {
-  }
+  record Institution(String name) {}
 
-  record Company(String name) {
-  }
+  record Company(String name) {}
 
   record Period(Date start, Date end) {
     public Period(Date start) {
@@ -33,26 +27,19 @@ interface ResumeDsl {
   }
 
   sealed interface Education {
-    record HighSchool(String title, Institution institution, Location location, Period period)
-        implements Education {
-    }
+    record HighSchool(String title, Institution institution, Location location, Period period) implements Education {}
 
-    record College(String title, Institution institution, Location location, Period period) implements Education {
-    }
+    record College(String title, Institution institution, Location location, Period period) implements Education {}
 
-    record Master(String title, Institution institution, Location location, Period period) implements Education {
-    }
+    record Master(String title, Institution institution, Location location, Period period) implements Education {}
 
-    record Phd(String title, Institution institution, Location location, Period period) implements Education {
-    }
+    record Phd(String title, Institution institution, Location location, Period period) implements Education {}
   }
 
   sealed interface Experience {
-    record Internship(String position, Company company, Location location, Period period) implements Experience {
-    }
+    record Internship(String position, Company company, Location location, Period period) implements Experience {}
 
-    record Work(String position, Company company, Location location, Period period) implements Experience {
-    }
+    record Work(String position, Company company, Location location, Period period) implements Experience {}
   }
 
   record Resume(
@@ -65,7 +52,8 @@ interface ResumeDsl {
       List<Experience> experience) {
   }
 
-  static void main(String... args) {
+  @SuppressWarnings("preview")
+  static void main() {
 
     var me = new Resume(
         "Antonio Muñoz",
@@ -115,6 +103,6 @@ interface ResumeDsl {
                 new Location("Madrid", "Spain"),
                 new Period(new Date(12, 2019)))));
 
-    System.out.println(me);
+    console().println(me);
   }
 }

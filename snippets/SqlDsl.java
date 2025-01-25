@@ -1,3 +1,4 @@
+import static java.lang.System.console;
 import static java.util.stream.Collectors.joining;
 
 import java.util.List;
@@ -137,6 +138,7 @@ interface SqlDsl {
 
   People PEOPLE = new People();
 
+  @SuppressWarnings("preview")
   static void main(String... args) {
     var query = select(
         PEOPLE.NAME,
@@ -145,6 +147,6 @@ interface SqlDsl {
         .where(gt(PEOPLE.AGE, 18))
         .sorting(asc(PEOPLE.AGE));
 
-    System.out.println(query.toSql());
+    console().println(query.toSql());
   }
 }

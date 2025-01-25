@@ -12,7 +12,7 @@ sealed interface Program<S, T> {
     }
   }
 
-  record AndThen<S, T, R>(Program<S, T> current, Function<T, Program<S, R>> next) implements Program<S, R> {
+  record FlatMap<S, T, R>(Program<S, T> current, Function<T, Program<S, R>> next) implements Program<S, R> {
     @Override
     public R eval(S state) {
       return next.apply(current.eval(state)).eval(state);
@@ -40,6 +40,6 @@ sealed interface Program<S, T> {
   }
 
   default <R> Program<S, R> flatMap(Function<T, Program<S, R>> next) {
-    return new AndThen<>(this, next);
+    return new FlatMap<>(this, next);
   }
 }

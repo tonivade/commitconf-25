@@ -1,3 +1,5 @@
+import static java.lang.System.console;
+
 import java.util.function.Function;
 
 /*
@@ -37,15 +39,15 @@ sealed interface ConsoleDsl {
   default String eval() {
     return switch (this) {
       case WriteLine(var line) -> {
-        System.console().println(line);
+        console().println(line);
         yield null;
       }
-      case ReadLine _ -> System.console().readLine();
+      case ReadLine _ -> console().readLine();
       case AndThen(var current, var next) -> next.apply(current.eval()).eval();
     };
   }
 
-  static void main(String... args) {
+  static void main() {
     var program = prompt("What's your name?").andThen(ConsoleDsl::sayHello);
 
     program.eval();

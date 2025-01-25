@@ -1,3 +1,4 @@
+import static java.lang.System.console;
 import static java.util.stream.Collectors.joining;
 
 import java.util.stream.Stream;
@@ -31,11 +32,12 @@ interface HtmlDsl {
   record Html(Head head, Body body) implements Tag {
   }
 
-  static void main(String... args) {
+  @SuppressWarnings("preview")
+  static void main() {
     var page = new Html(
         new Head("Example"),
         new Body(new H1("Hello World!")));
 
-    System.out.println(page.toHtml());
+    console().println(page.toHtml());
   }
 }

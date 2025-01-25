@@ -1,12 +1,14 @@
 package program;
 
+import static java.lang.System.console;
+
 sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
 
   interface Service {
 
     @SuppressWarnings("preview")
     default void writeLine(String line) {
-      System.console().println(line);
+      console().println(line);
     }
 
     default String readLine() {

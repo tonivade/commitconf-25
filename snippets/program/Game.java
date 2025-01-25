@@ -4,6 +4,7 @@ import static program.Console.prompt;
 import static program.Console.writeLine;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 sealed interface Game<T> extends Program.Dsl<Game.State, T> {
 
@@ -73,13 +74,11 @@ sealed interface Game<T> extends Program.Dsl<Game.State, T> {
 
   final class GameContext implements Game.State, Console.Service {
 
-    private final Random random = new Random();
-
     private int value;
 
     @Override
     public void next() {
-      this.value = random.nextInt(10);
+      this.value = ThreadLocalRandom.current().nextInt(10);
     }
 
     @Override

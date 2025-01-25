@@ -1,4 +1,6 @@
-import java.util.Random;
+import static java.lang.System.console;
+
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
 sealed interface GameDsl<T> {
@@ -52,10 +54,10 @@ sealed interface GameDsl<T> {
   default T eval(State state) {
     return (T) switch (this) {
       case WriteLine(var line) -> {
-        System.console().println(line);
+        console().println(line);
         yield null;
       }
-      case ReadLine _ -> System.console().readLine();
+      case ReadLine _ -> console().readLine();
       case RandomNumber _ -> {
         state.next();
         yield null;
@@ -106,12 +108,10 @@ sealed interface GameDsl<T> {
 
   final class State {
 
-    private final Random random = new Random();
-
     private int value;
 
     void next() {
-      this.value = random.nextInt(10);
+      this.value = ThreadLocalRandom.current().nextInt(10);
     }
 
     boolean check(int number) {
