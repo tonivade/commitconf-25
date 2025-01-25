@@ -54,7 +54,7 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
     };
   }
 
-  static void main(String... args) {
+  static void main() {
     var program = whatsYourName().flatMap(Console::sayHello);
 
     program.eval(new Service() {});

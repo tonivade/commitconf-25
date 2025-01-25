@@ -178,7 +178,7 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
     return printMenu().flatMap(Todo::executeAction);
   }
 
-  static void main(String... args) {
+  static void main() {
     var program = Console.<TodoContext>whatsYourName()
       .flatMap(Console::sayHello)
       .andThen(loop());

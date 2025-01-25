@@ -58,7 +58,7 @@ sealed interface Game<T> extends Program.Dsl<Game.State, T> {
     return writeLine("Bye!");
   }
 
-  static void main(String... args) {
+  static void main() {
     var program = Console.<GameContext>whatsYourName()
         .flatMap(Console::sayHello)
         .andThen(prompt("Do you want to play a game? (Y/y)"))
