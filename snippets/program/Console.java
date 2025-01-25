@@ -12,7 +12,7 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
     }
 
     default String readLine() {
-      return System.console().readLine();
+      return console().readLine();
     }
   }
 
