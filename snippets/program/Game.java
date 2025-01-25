@@ -35,28 +35,28 @@ sealed interface Game<S extends Game.State, T> extends Program.Dsl<S, T> {
     };
   }
 
-  static Program<Context, Void> loop() {
-    return Console.<Context>prompt("Enter a number")
+  static Program<GameContext, Void> loop() {
+    return Console.<GameContext>prompt("Enter a number")
       .map(Integer::parseInt)
       .andThen(Game::checkNumber)
       .andThen(Game::winOrContinue);
   }
 
-  static Program<Context, Void> winOrContinue(boolean answer) {
+  static Program<GameContext, Void> winOrContinue(boolean answer) {
     if (answer) {
       return writeLine("YOU WIN!!");
     }
     return loop();
   }
 
-  static Program<Context, Void> playOrExit(String answer) {
+  static Program<GameContext, Void> playOrExit(String answer) {
     if (answer.equalsIgnoreCase("y")) {
-      return Game.<Context>randomNumber().andThen(loop());
+      return Game.<GameContext>randomNumber().andThen(loop());
     }
     return writeLine("Bye!");
   }
 
-  static Program<Context, String> whatsYourName() {
+  static Program<GameContext, String> whatsYourName() {
     return prompt("What's your name?");
   }
 
@@ -66,10 +66,10 @@ sealed interface Game<S extends Game.State, T> extends Program.Dsl<S, T> {
         .andThen(prompt("Do you want to play a game? (Y/y)"))
         .andThen(Game::playOrExit);
 
-    program.eval(new Context());
+    program.eval(new GameContext());
   }
 
-  final class Context implements Game.State, Console.Service {
+  final class GameContext implements Game.State, Console.DefaultService {
 
     private final Random random = new Random();
 
@@ -83,17 +83,6 @@ sealed interface Game<S extends Game.State, T> extends Program.Dsl<S, T> {
     @Override
     public boolean check(int number) {
       return number == value;
-    }
-
-    @SuppressWarnings("preview")
-    @Override
-    public void writeLine(String line) {
-      System.console().println(line);
-    }
-
-    @Override
-    public String readLine() {
-      return System.console().readLine();
     }
   }
 }

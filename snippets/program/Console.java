@@ -39,26 +39,26 @@ sealed interface Console<S extends Console.Service, T> extends Program.Dsl<S, T>
     };
   }
 
-  static Program<Context, String> whatsYourName() {
+  static Program<Service, String> whatsYourName() {
     return prompt("What's your name?");
   }
 
   static void main(String... args) {
     var program = whatsYourName().andThen(Console::sayHello);
 
-    program.eval(new Context());
+    program.eval(new DefaultService() {});
   }
 
-  final class Context implements Console.Service {
+  interface DefaultService extends Console.Service {
 
     @SuppressWarnings("preview")
     @Override
-    public void writeLine(String line) {
+    default void writeLine(String line) {
       System.console().println(line);
     }
 
     @Override
-    public String readLine() {
+    default String readLine() {
       return System.console().readLine();
     }
   }

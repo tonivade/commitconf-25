@@ -67,8 +67,8 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
     };
   }
 
-  static Program<Context, Integer> printMenu() {
-    return Console.<Context>writeLine("Menu")
+  static Program<TodoContext, Integer> printMenu() {
+    return Console.<TodoContext>writeLine("Menu")
       .andThen(writeLine("1. Create"))
       .andThen(writeLine("2. List"))
       .andThen(writeLine("3. Find"))
@@ -80,7 +80,7 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
       .map(Integer::parseInt);
   }
 
-  static Program<Context, Void> executeAction(int action) {
+  static Program<TodoContext, Void> executeAction(int action) {
     return switch (action) {
       case 1 -> createTodo();
       case 2 -> findAll();
@@ -93,28 +93,28 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
     };
   }
 
-  static Program<Context, String> promptTitle() {
+  static Program<TodoContext, String> promptTitle() {
     return prompt("Enter title");
   }
 
-  static Program<Context, Integer> promptId() {
-    return Console.<Context>prompt("Enter id").map(Integer::parseInt);
+  static Program<TodoContext, Integer> promptId() {
+    return Console.<TodoContext>prompt("Enter id").map(Integer::parseInt);
   }
 
-  static Program<Context, Void> findAll() {
-    return new FindAll<Context>()
+  static Program<TodoContext, Void> findAll() {
+    return new FindAll<TodoContext>()
       .map(list -> list.stream().map(Object::toString).collect(joining("\n")))
       .andThen(Console::writeLine)
       .andThen(loop());
   }
 
-  static Program<Context, Void> deleteAll() {
-    return new DeleteAll<Context>()
+  static Program<TodoContext, Void> deleteAll() {
+    return new DeleteAll<TodoContext>()
       .andThen(writeLine("all todo removed"))
       .andThen(loop());
   }
 
-  static Program<Context, Void> createTodo() {
+  static Program<TodoContext, Void> createTodo() {
     return map2(promptId(), promptTitle(),
         (id, title) -> new TodoEntity(id, title, NOT_COMPLETED))
       .andThen(Create::new)
@@ -122,14 +122,14 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
       .andThen(loop());
   }
 
-  static Program<Context, Void> deleteTodo() {
+  static Program<TodoContext, Void> deleteTodo() {
     return promptId()
       .andThen(DeleteOne::new)
       .andThen(writeLine("todo removed"))
       .andThen(loop());
   }
 
-  static Program<Context, Void> findTodo() {
+  static Program<TodoContext, Void> findTodo() {
     return promptId()
       .andThen(FindOne::new)
       .map(optional -> optional.map(Object::toString).orElse("not found"))
@@ -137,18 +137,18 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
       .andThen(loop());
   }
 
-  static Program<Context, Void> markCompleted() {
+  static Program<TodoContext, Void> markCompleted() {
     return promptId()
       .andThen(id -> new Update<>(id, entity -> entity.withState(COMPLETED)))
       .andThen(writeLine("todo compmleted"))
       .andThen(loop());
   }
 
-  static Program<Context, Void> loop() {
+  static Program<TodoContext, Void> loop() {
     return printMenu().andThen(Todo::executeAction);
   }
 
-  static Program<Context, String> whatsYourName() {
+  static Program<TodoContext, String> whatsYourName() {
     return prompt("What's your name?");
   }
 
@@ -157,23 +157,12 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
       .andThen(Console::sayHello)
       .andThen(loop());
 
-    program.eval(new Context());
+    program.eval(new TodoContext());
   }
 
-  final class Context implements Todo.Repository, Console.Service {
+  final class TodoContext implements Todo.Repository, Console.DefaultService {
 
-    Map<Integer, TodoEntity> repository = new HashMap<>();
-
-    @SuppressWarnings("preview")
-    @Override
-    public void writeLine(String line) {
-      System.console().println(line);
-    }
-
-    @Override
-    public String readLine() {
-      return System.console().readLine();
-    }
+    private final Map<Integer, TodoEntity> repository = new HashMap<>();
 
     @Override
     public void create(TodoEntity todo) {
