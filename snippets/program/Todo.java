@@ -134,7 +134,7 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
   static Program<TodoContext, Void> findAllTodos() {
     return Todo.<TodoContext>findAll()
       .map(list -> list.stream().map(Object::toString).collect(joining("\n")))
-      .andThen(Console::writeLine)
+      .flatMap(Console::writeLine)
       .andThen(loop());
   }
 
@@ -147,35 +147,35 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
   static Program<TodoContext, Void> createTodo() {
     return map2(promptId(), promptTitle(),
         (id, title) -> new TodoEntity(id, title, NOT_COMPLETED))
-      .andThen(Todo::create)
+      .flatMap(Todo::create)
       .andThen(writeLine("todo created"))
       .andThen(loop());
   }
 
   static Program<TodoContext, Void> deleteTodo() {
     return promptId()
-      .andThen(Todo::deleteOne)
+      .flatMap(Todo::deleteOne)
       .andThen(writeLine("todo removed"))
       .andThen(loop());
   }
 
   static Program<TodoContext, Void> findTodo() {
     return promptId()
-      .andThen(Todo::findOne)
+      .flatMap(Todo::findOne)
       .map(optional -> optional.map(Object::toString).orElse("not found"))
-      .andThen(Console::writeLine)
+      .flatMap(Console::writeLine)
       .andThen(loop());
   }
 
   static Program<TodoContext, Void> markCompleted() {
     return promptId()
-      .andThen(id -> update(id, entity -> entity.withState(COMPLETED)))
+      .flatMap(id -> update(id, entity -> entity.withState(COMPLETED)))
       .andThen(writeLine("todo compmleted"))
       .andThen(loop());
   }
 
   static Program<TodoContext, Void> loop() {
-    return printMenu().andThen(Todo::executeAction);
+    return printMenu().flatMap(Todo::executeAction);
   }
 
   static Program<TodoContext, String> whatsYourName() {
@@ -184,13 +184,13 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
 
   static void main(String... args) {
     var program = whatsYourName()
-      .andThen(Console::sayHello)
+      .flatMap(Console::sayHello)
       .andThen(loop());
 
     program.eval(new TodoContext());
   }
 
-  final class TodoContext implements Todo.Repository, Console.DefaultService {
+  final class TodoContext implements Todo.Repository, Console.Service {
 
     private final Map<Integer, TodoEntity> repository = new HashMap<>();
 

@@ -1,5 +1,8 @@
 import java.util.function.Function;
 
+/*
+ * https://en.wikipedia.org/wiki/Monad_(functional_programming)
+ */
 sealed interface ConsoleDsl {
 
   record WriteLine(String line) implements ConsoleDsl {}

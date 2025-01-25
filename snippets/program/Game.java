@@ -40,8 +40,8 @@ sealed interface Game<T> extends Program.Dsl<Game.State, T> {
   static Program<GameContext, Void> loop() {
     return Console.<GameContext>prompt("Enter a number")
       .map(Integer::parseInt)
-      .andThen(Game::checkNumber)
-      .andThen(Game::winOrContinue);
+      .flatMap(Game::checkNumber)
+      .flatMap(Game::winOrContinue);
   }
 
   static Program<GameContext, Void> winOrContinue(boolean answer) {
@@ -64,14 +64,14 @@ sealed interface Game<T> extends Program.Dsl<Game.State, T> {
 
   static void main(String... args) {
     var program = whatsYourName()
-        .andThen(Console::sayHello)
+        .flatMap(Console::sayHello)
         .andThen(prompt("Do you want to play a game? (Y/y)"))
-        .andThen(Game::playOrExit);
+        .flatMap(Game::playOrExit);
 
     program.eval(new GameContext());
   }
 
-  final class GameContext implements Game.State, Console.DefaultService {
+  final class GameContext implements Game.State, Console.Service {
 
     private final Random random = new Random();
 

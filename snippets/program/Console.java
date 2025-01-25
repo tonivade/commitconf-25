@@ -3,8 +3,15 @@ package program;
 sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
 
   interface Service {
-    void writeLine(String line);
-    String readLine();
+
+    @SuppressWarnings("preview")
+    default void writeLine(String line) {
+      System.console().println(line);
+    }
+
+    default String readLine() {
+      return System.console().readLine();
+    }
   }
 
   record WriteLine(String line) implements Console<Void> {}
@@ -46,22 +53,8 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
   }
 
   static void main(String... args) {
-    var program = whatsYourName().andThen(Console::sayHello);
+    var program = whatsYourName().flatMap(Console::sayHello);
 
-    program.eval(new DefaultService() {});
-  }
-
-  interface DefaultService extends Console.Service {
-
-    @SuppressWarnings("preview")
-    @Override
-    default void writeLine(String line) {
-      System.console().println(line);
-    }
-
-    @Override
-    default String readLine() {
-      return System.console().readLine();
-    }
+    program.eval(new Service() {});
   }
 }

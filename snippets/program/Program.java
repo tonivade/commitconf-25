@@ -28,18 +28,18 @@ sealed interface Program<S, T> {
   }
 
   static <S, T, V, R> Program<S, R> map2(Program<S, T> pt, Program<S, V> pv, BiFunction<T, V, R> mapper) {
-    return pt.andThen(t -> pv.map(v -> mapper.apply(t, v)));
+    return pt.flatMap(t -> pv.map(v -> mapper.apply(t, v)));
   }
 
   default <R> Program<S, R> map(Function<T, R> mapper) {
-    return andThen(mapper.andThen(Program::done));
+    return flatMap(mapper.andThen(Program::done));
   }
 
   default <R> Program<S, R> andThen(Program<S, R> next) {
-    return andThen(_ -> next);
+    return flatMap(_ -> next);
   }
 
-  default <R> Program<S, R> andThen(Function<T, Program<S, R>> next) {
+  default <R> Program<S, R> flatMap(Function<T, Program<S, R>> next) {
     return new AndThen<>(this, next);
   }
 }
