@@ -38,6 +38,10 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
     return writeLine("Hello " + name);
   }
 
+  static <S extends Service> Program<S, String> whatsYourName() {
+    return prompt("What's your name?");
+  }
+
   @Override
   @SuppressWarnings("unchecked")
   default T eval(Service service) {
@@ -48,10 +52,6 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
       }
       case ReadLine _ -> service.readLine();
     };
-  }
-
-  static Program<Service, String> whatsYourName() {
-    return prompt("What's your name?");
   }
 
   static void main(String... args) {
