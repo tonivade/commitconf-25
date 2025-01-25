@@ -46,11 +46,11 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
   @SuppressWarnings("unchecked")
   default T eval(S repository) {
     return (T) switch (this) {
-      case Create<?>(var todo) -> {
+      case Create<?>(TodoEntity todo) -> {
         repository.create(todo);
         yield null;
       }
-      case Update<?>(var id, var update) -> {
+      case Update<?>(int id, UnaryOperator<TodoEntity> update) -> {
         repository.update(id, update);
         yield null;
       }
@@ -64,6 +64,7 @@ sealed interface Todo<S extends Todo.Repository, T> extends Program.Dsl<S, T> {
         repository.deleteAll();
         yield null;
       }
+      default -> null;
     };
   }
 
