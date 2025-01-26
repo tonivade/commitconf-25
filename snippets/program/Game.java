@@ -37,37 +37,37 @@ sealed interface Game<T> extends Program.Dsl<Game.State, T> {
     };
   }
 
-  static Program<GameContext, Void> loop() {
-    return Console.<GameContext>prompt("Enter a number")
+  static Program<Context, Void> loop() {
+    return Console.<Context>prompt("Enter a number")
       .map(Integer::parseInt)
       .flatMap(Game::checkNumber)
       .flatMap(Game::winOrContinue);
   }
 
-  static Program<GameContext, Void> winOrContinue(boolean answer) {
+  static Program<Context, Void> winOrContinue(boolean answer) {
     if (answer) {
       return writeLine("YOU WIN!!");
     }
     return loop();
   }
 
-  static Program<GameContext, Void> playOrExit(String answer) {
+  static Program<Context, Void> playOrExit(String answer) {
     if (answer.equalsIgnoreCase("y")) {
-      return Game.<GameContext>randomNumber().andThen(loop());
+      return Game.<Context>randomNumber().andThen(loop());
     }
     return writeLine("Bye!");
   }
 
   static void main() {
-    var program = Console.<GameContext>whatsYourName()
+    var program = Console.<Context>whatsYourName()
         .flatMap(Console::sayHello)
         .andThen(prompt("Do you want to play a game? (Y/y)"))
         .flatMap(Game::playOrExit);
 
-    program.eval(new GameContext());
+    program.eval(new Context());
   }
 
-  final class GameContext implements Game.State, Console.Service {
+  final class Context implements Game.State, Console.Service {
 
     private int value;
 

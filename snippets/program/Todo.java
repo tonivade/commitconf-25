@@ -97,8 +97,8 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
     };
   }
 
-  static Program<TodoContext, Integer> printMenu() {
-    return Console.<TodoContext>writeLine("Menu")
+  static Program<Context, Integer> printMenu() {
+    return Console.<Context>writeLine("Menu")
       .andThen(writeLine("1. Create"))
       .andThen(writeLine("2. List"))
       .andThen(writeLine("3. Find"))
@@ -110,7 +110,7 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
       .map(Integer::parseInt);
   }
 
-  static Program<TodoContext, Void> executeAction(int action) {
+  static Program<Context, Void> executeAction(int action) {
     return switch (action) {
       case 1 -> createTodo();
       case 2 -> findAllTodos();
@@ -123,28 +123,28 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
     };
   }
 
-  static Program<TodoContext, String> promptTitle() {
+  static Program<Context, String> promptTitle() {
     return prompt("Enter title");
   }
 
-  static Program<TodoContext, Integer> promptId() {
-    return Console.<TodoContext>prompt("Enter id").map(Integer::parseInt);
+  static Program<Context, Integer> promptId() {
+    return Console.<Context>prompt("Enter id").map(Integer::parseInt);
   }
 
-  static Program<TodoContext, Void> findAllTodos() {
-    return Todo.<TodoContext>findAll()
+  static Program<Context, Void> findAllTodos() {
+    return Todo.<Context>findAll()
       .map(list -> list.stream().map(Object::toString).collect(joining("\n")))
       .flatMap(Console::writeLine)
       .andThen(loop());
   }
 
-  static Program<TodoContext, Void> deleteAllTodos() {
-    return Todo.<TodoContext>deleteAll()
+  static Program<Context, Void> deleteAllTodos() {
+    return Todo.<Context>deleteAll()
       .andThen(writeLine("all todo removed"))
       .andThen(loop());
   }
 
-  static Program<TodoContext, Void> createTodo() {
+  static Program<Context, Void> createTodo() {
     return map2(promptId(), promptTitle(),
         (id, title) -> new TodoEntity(id, title, NOT_COMPLETED))
       .flatMap(Todo::create)
@@ -152,14 +152,14 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
       .andThen(loop());
   }
 
-  static Program<TodoContext, Void> deleteTodo() {
+  static Program<Context, Void> deleteTodo() {
     return promptId()
       .flatMap(Todo::deleteOne)
       .andThen(writeLine("todo removed"))
       .andThen(loop());
   }
 
-  static Program<TodoContext, Void> findTodo() {
+  static Program<Context, Void> findTodo() {
     return promptId()
       .flatMap(Todo::findOne)
       .map(optional -> optional.map(Object::toString).orElse("not found"))
@@ -167,26 +167,26 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
       .andThen(loop());
   }
 
-  static Program<TodoContext, Void> markCompleted() {
+  static Program<Context, Void> markCompleted() {
     return promptId()
       .flatMap(id -> update(id, entity -> entity.withState(COMPLETED)))
       .andThen(writeLine("todo compmleted"))
       .andThen(loop());
   }
 
-  static Program<TodoContext, Void> loop() {
+  static Program<Context, Void> loop() {
     return printMenu().flatMap(Todo::executeAction);
   }
 
   static void main() {
-    var program = Console.<TodoContext>whatsYourName()
+    var program = Console.<Context>whatsYourName()
       .flatMap(Console::sayHello)
       .andThen(loop());
 
-    program.eval(new TodoContext());
+    program.eval(new Context());
   }
 
-  final class TodoContext implements Todo.Repository, Console.Service {
+  final class Context implements Todo.Repository, Console.Service {
 
     private final Map<Integer, TodoEntity> repository = new HashMap<>();
 
