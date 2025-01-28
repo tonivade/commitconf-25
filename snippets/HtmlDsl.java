@@ -20,17 +20,13 @@ interface HtmlDsl {
     }
   }
 
-  record H1(String content) implements Tag {
-  }
+  record H1(String content) implements Tag {}
 
-  record Head(String title) implements Tag {
-  }
+  record Head(String title) implements Tag {}
 
-  record Body(Tag... content) implements Tag {
-  }
+  record Body(Tag... content) implements Tag {}
 
-  record Html(Head head, Body body) implements Tag {
-  }
+  record Html(Head head, Body body) implements Tag {}
 
   @SuppressWarnings("preview")
   static void main() {
