@@ -7,6 +7,7 @@ footer: #commitconf 2025
 author: Antonio Muñoz
 transition: fade-out
 backgroundColor: #eee
+backgroundImage: url('https://tonivade.es/commitconf25/images/background.png')
 color: #000
 ---
 
