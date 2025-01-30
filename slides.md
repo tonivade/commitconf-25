@@ -3,7 +3,7 @@ marp: true
 title: Construyendo DSLs en Java
 description: Aprovechando las nuevas herramientas del lenguaje
 theme: gaia
-footer: #commitconf 2025
+footer: :copyright: Antonio Muñoz
 author: Antonio Muñoz
 transition: fade-out
 backgroundColor: #eee
