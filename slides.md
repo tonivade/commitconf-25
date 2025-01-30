@@ -3,7 +3,7 @@ marp: true
 title: Construyendo DSLs en Java
 description: Aprovechando las nuevas herramientas del lenguaje
 theme: gaia
-footer: :copyright: Antonio Muñoz
+footer: me@tonivade.es
 author: Antonio Muñoz
 transition: fade-out
 backgroundColor: #eee
@@ -26,8 +26,9 @@ Aprovechando las nuevas herramientas del lenguaje
 * Programo en Java desde Java 1.1.
 * Actualmente trabajo en https://clarity.ai como backender.
 * Me encontraréis en:
-    - Mastodon: @tonivade@jvm.social
+    - Mastodon: https://jvm.social/@tonivade
     - Github: https://github.com/tonivade
+    - Blog: https://blog.tonivade.es
     - Email: me@tonivade.es
 
 ---

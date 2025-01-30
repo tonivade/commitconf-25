@@ -11,11 +11,13 @@ sealed interface Program<S, T> {
     }
   }
 
-  record FlatMap<S, T, R>(Program<S, T> current, Function<T, Program<S, R>> next) implements Program<S, R> {
+  record FlatMap<S, T, R>(
+      Program<S, T> current, 
+      Function<T, Program<S, R>> next) implements Program<S, R> {
     @Override public R eval(S state) {
       return next.apply(current.eval(state)).eval(state);
     }
-  };
+  }
 
   non-sealed interface Dsl<S, T> extends Program<S, T> {}
 
