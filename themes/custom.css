@@ -1,0 +1,10 @@
+/* @theme custom */
+
+@import 'gaia';
+
+.highlighted-line {
+  background-color: #0a446f;
+  display: block;
+  margin: 0 -16px;
+  padding: 0 16px;
+}
