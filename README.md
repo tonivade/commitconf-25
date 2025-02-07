@@ -8,20 +8,13 @@ Exploraremos paso a paso las novedades del lenguaje, y aplicaremos estas técnic
 
 ## Generar slides y compilar snippets
 
-Necesitas tener instalado [sdkman](https://sdkman.io/).  Este comando instalará la versión de java necesaria para compilar los snippets.
-
-```sh
-sdk env install
-```
-
-
-Y para compilar los snippets hay que ejecutar el script:
+Necesitas tener instalado [sdkman](https://sdkman.io/).  Este comando instalará la versión de java necesaria para compilar los snippets, y hará la compilación propiamente dicha:
 
 ```sh
 ./compile.sh
 ```
 
-Para generar las slides necesitas tener instalado y funcionando en tu máquina [docker](https://www.docker.com/) ya que se usa la imagen de [marp](https://marp.app/).  Finalmente ejecutando este script generará las slides:
+Para generar las slides necesitas tener instalado npm y nodejs. Para instalarlo recomiendo [nvm](https://github.com/nvm-sh/nvm). Finalmente ejecutando este script generará las slides:
 
 ```sh
 ./build.sh
