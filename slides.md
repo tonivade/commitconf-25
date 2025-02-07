@@ -2,7 +2,7 @@
 marp: true
 title: Construyendo DSLs en Java
 description: Aprovechando las nuevas herramientas del lenguaje
-theme: gaia
+theme: custom
 footer: me@tonivade.es
 author: Antonio Muñoz
 transition: fade-out
@@ -93,7 +93,7 @@ order by people.age ASC
 
 # HTML
 
-```html
+```html {1,5}
 <html>
   <head>
     <title>Example</title>
@@ -108,10 +108,10 @@ order by people.age ASC
 
 # DSLs internos
 
-* Están implementados como parte del propio lenguage donde se van a usar.
+* Están implementados como parte del propio lenguaje donde se van a usar.
 * Ejemplos: JOOQ, gradle, Assertj.
 * Más sencillos de implementar.
-* Están limitados a las capacidades del lenguage anfitrión.
+* Están limitados a las capacidades del lenguaje anfitrión.
 
 ---
 
