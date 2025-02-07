@@ -108,10 +108,10 @@ order by people.age ASC
 
 # DSLs internos
 
-* Están implementados como parte del propio lenguage donde se van a usar.
+* Están implementados como parte del propio lenguaje donde se van a usar.
 * Ejemplos: JOOQ, gradle, Assertj.
 * Más sencillos de implementar.
-* Están limitados a las capacidades del lenguage anfitrión.
+* Están limitados a las capacidades del lenguaje anfitrión.
 
 ---
 
