@@ -4,7 +4,7 @@ import static java.util.stream.Collectors.joining;
 import static program.Console.prompt;
 import static program.Console.readLine;
 import static program.Console.writeLine;
-import static program.Program.map2;
+import static program.Program.zip;
 import static program.Todo.State.COMPLETED;
 import static program.Todo.State.NOT_COMPLETED;
 
@@ -145,7 +145,7 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
   }
 
   static Program<Context, Void> createTodo() {
-    return map2(promptId(), promptTitle(),
+    return zip(promptId(), promptTitle(),
         (id, title) -> new TodoEntity(id, title, NOT_COMPLETED))
       .flatMap(Todo::create)
       .andThen(writeLine("todo created"))
@@ -170,7 +170,7 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
   static Program<Context, Void> markCompleted() {
     return promptId()
       .flatMap(id -> update(id, entity -> entity.withState(COMPLETED)))
-      .andThen(writeLine("todo compmleted"))
+      .andThen(writeLine("todo completed"))
       .andThen(loop());
   }
 

@@ -27,7 +27,7 @@ sealed interface Program<S, T> {
     return new Done<>(value);
   }
 
-  static <S, T, U, R> Program<S, R> map2(Program<S, T> pt, Program<S, U> pu, BiFunction<T, U, R> mapper) {
+  static <S, T, U, R> Program<S, R> zip(Program<S, T> pt, Program<S, U> pu, BiFunction<T, U, R> mapper) {
     return pt.flatMap(t -> pu.map(u -> mapper.apply(t, u)));
   }
 
