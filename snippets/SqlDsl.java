@@ -138,11 +138,8 @@ interface SqlDsl {
 
   People PEOPLE = new People();
 
-  @SuppressWarnings("preview")
   static void main(String... args) {
-    var query = select(
-        PEOPLE.NAME,
-        PEOPLE.AGE)
+    var query = select(PEOPLE.NAME, PEOPLE.AGE)
         .from(PEOPLE)
         .where(gt(PEOPLE.AGE, 18))
         .sorting(asc(PEOPLE.AGE));

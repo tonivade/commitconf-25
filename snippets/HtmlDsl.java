@@ -28,7 +28,6 @@ interface HtmlDsl {
 
   record Html(Head head, Body body) implements Tag {}
 
-  @SuppressWarnings("preview")
   static void main() {
     var page = new Html(
         new Head("Example"),

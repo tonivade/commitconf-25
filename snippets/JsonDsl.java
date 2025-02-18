@@ -60,7 +60,6 @@ sealed interface JsonDsl {
         .collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
   }
 
-  @SuppressWarnings("preview")
   static void main() {
     var json = array(
         object(

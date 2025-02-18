@@ -35,7 +35,6 @@ sealed interface ConsoleDsl {
     return writeLine("Hello " + name);
   }
 
-  @SuppressWarnings("preview")
   default String eval() {
     return switch (this) {
       case WriteLine(var line) -> {

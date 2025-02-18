@@ -35,7 +35,6 @@ sealed interface ConsoleCps {
     return new End();
   }
 
-  @SuppressWarnings("preview")
   default String eval() {
     return switch (this) {
       case WriteLine(var line, var next) -> {

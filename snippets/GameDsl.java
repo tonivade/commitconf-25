@@ -50,7 +50,7 @@ sealed interface GameDsl<T> {
     return new AndThen<>(this, next);
   }
 
-  @SuppressWarnings({ "preview", "unchecked" })
+  @SuppressWarnings("unchecked")
   default T eval(State state) {
     return (T) switch (this) {
       case WriteLine(var line) -> {

@@ -52,7 +52,6 @@ interface ResumeDsl {
       List<Experience> experience) {
   }
 
-  @SuppressWarnings("preview")
   static void main() {
 
     var me = new Resume(
@@ -68,7 +67,7 @@ interface ResumeDsl {
                 new Location("Getafe", "Spain"),
                 new Period(new Date(9, 1991), new Date(6, 1996))),
             new Education.College(
-                "B.Eng in Telecommuncations",
+                "B.Eng in Telecommunications",
                 new Institution("UPM"),
                 new Location("Madrid", "Spain"),
                 new Period(new Date(9, 1996), new Date(6, 2001)))),

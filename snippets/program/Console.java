@@ -6,7 +6,6 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
 
   interface Service {
 
-    @SuppressWarnings("preview")
     default void writeLine(String line) {
       console().println(line);
     }
