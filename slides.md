@@ -5,7 +5,7 @@ description: Aprovechando las nuevas herramientas del lenguaje
 theme: custom
 footer: me@tonivade.es
 author: Antonio Muñoz
-transition: fade-out
+transition: none
 backgroundColor: #eee
 backgroundImage: url('https://tonivade.es/commitconf25/images/background.png')
 color: #000
@@ -205,6 +205,62 @@ Toni
 
 ```java
 sealed interface Console {
+  static void main() {
+
+
+
+  }
+}
+```
+
+---
+
+# Un programa muy sencillo (II)
+
+```java {3}
+sealed interface Console {
+  static void main() {
+    System.console().println("What's your name?");
+
+
+  }
+}
+```
+
+---
+
+# Un programa muy sencillo (II)
+
+```java {4}
+sealed interface Console {
+  static void main() {
+    System.console().println("What's your name?");
+    var name = System.console().readLine();
+
+  }
+}
+```
+
+---
+
+# Un programa muy sencillo (II)
+
+```java {5}
+sealed interface Console {
+  static void main() {
+    System.console().println("What's your name?");
+    var name = System.console().readLine();
+    System.console().println("Hello " + name + "!");
+  }
+}
+```
+
+---
+
+# Un programa muy sencillo (III)
+
+```java
+sealed interface Console {
 
 
 }
@@ -212,7 +268,7 @@ sealed interface Console {
 
 ---
 
-# Un programa muy sencillo (II)
+# Un programa muy sencillo (III)
 
 ```java {2}
 sealed interface Console {
@@ -223,68 +279,12 @@ sealed interface Console {
 
 ---
 
-# Un programa muy sencillo (II)
+# Un programa muy sencillo (III)
 
 ```java {3}
 sealed interface Console {
   record WriteLine(String line) implements Console {}
   record ReadLine() implements Console {}
-}
-```
-
----
-
-# Un programa muy sencillo (III)
-
-```java
-sealed interface Console {
-  static void main() {
-
-
-
-  }
-}
-```
-
----
-
-# Un programa muy sencillo (III)
-
-```java {3}
-sealed interface Console {
-  static void main() {
-    // WriteLine("What's your name?")
-
-
-  }
-}
-```
-
----
-
-# Un programa muy sencillo (III)
-
-```java {4}
-sealed interface Console {
-  static void main() {
-    // WriteLine("What's your name?")
-    // ReadLine() -> name
-
-  }
-}
-```
-
----
-
-# Un programa muy sencillo (III)
-
-```java {5}
-sealed interface Console {
-  static void main() {
-    // WriteLine("What's your name?")
-    // ReadLine() -> name
-    // WriteLine("Hello $name!")
-  }
 }
 ```
 
@@ -295,9 +295,9 @@ sealed interface Console {
 Usando CPS. Continuation Passing Style.
 
 ```java
-sealed interface Console {
-  record WriteLine(String line) implements Console {}
-  record ReadLine() implements Console {}
+sealed interface ConsoleCps {
+  record WriteLine(String line) implements ConsoleCps {}
+  record ReadLine() implements ConsoleCps {}
 }
 ```
 
@@ -314,7 +314,7 @@ Usando CPS. Continuation Passing Style.
 ```java {2}
 sealed interface ConsoleCps {
   record WriteLine(String line, ConsoleCps next) implements ConsoleCps {}
-  record ReadLine() implements Console {}
+  record ReadLine() implements ConsoleCps {}
 }
 ```
 
@@ -347,11 +347,36 @@ sealed interface ConsoleCps {
 
 # Primer Intento (II)
 
+```java {3}
+sealed interface ConsoleCps {
+  static void main() {
+    new WriteLine("What's your name?", ???);
+  }
+}
+```
+
+---
+
+# Primer Intento (II)
+
 ```java {4}
 sealed interface ConsoleCps {
   static void main() {
     new WriteLine("What's your name?", 
       new ReadLine());
+  }
+}
+```
+
+---
+
+# Primer Intento (II)
+
+```java {4}
+sealed interface ConsoleCps {
+  static void main() {
+    new WriteLine("What's your name?", 
+      new ReadLine(???));
   }
 }
 ```
@@ -388,7 +413,7 @@ sealed interface ConsoleCps {
 
 # Primer Intento (II)
 
-```java {8}
+```java {6}
 sealed interface ConsoleCps {
   static void main() {
     new WriteLine("What's your name?", 
@@ -403,22 +428,7 @@ sealed interface ConsoleCps {
 
 # Primer Intento (II)
 
-```java {8}
-sealed interface ConsoleCps {
-  static void main() {
-    var program = new WriteLine("What's your name?", 
-      new ReadLine(
-        name -> new WriteLine("Hello " + name + "!", 
-          new End())));
-
-    program.eval();
-  }
-}
-```
-
----
-
-# Primer Intento (III)
+Tenemos que añadir otro caso para terminar la ejecución:
 
 ```java {4}
 sealed interface ConsoleCps {
@@ -430,9 +440,74 @@ sealed interface ConsoleCps {
 
 ---
 
+# Primer Intento (III)
+
+```java {3}
+sealed interface ConsoleCps {
+  static ConsoleCps prompt(String question, Function<String, ConsoleCps> next) {
+    return new WriteLine(question, new ReadLine(next));
+  }
+}
+```
+
+---
+
+# Primer Intento (III)
+
+```java {3}
+sealed interface ConsoleCps {
+  static void main() {
+    prompt("What's your name?", 
+      name -> new WriteLine("Hello " + name + "!"));
+  }
+}
+```
+
+---
+
+# Primer Intento (III)
+
+```java {3}
+sealed interface ConsoleCps {
+  static ConsoleCps sayHello(String name) {
+    return new WriteLine("Hello " + name + "!", new End());
+  }
+}
+```
+
+---
+
+# Primer Intento (III)
+
+```java {3}
+sealed interface ConsoleCps {
+  static void main() {
+    prompt("What's your name?", ConsoleCps::sayHello);
+  }
+}
+```
+
+---
+
 # Primer Intento (IV)
 
-```java {4}
+Ahora es el momento de evaluar el programa.
+
+```java {5}
+sealed interface ConsoleCps {
+  static void main() {
+    var program = prompt("What's your name?", ConsoleCps::sayHello);
+
+    program.eval();
+  }
+}
+```
+
+---
+
+# Primer Intento (IV)
+
+```java
 default String eval() {
   return switch (this) {
   };
@@ -447,7 +522,7 @@ default String eval() {
 default String eval() {
   return switch (this) {
     case WriteLine(var line, var next) -> {
-      console().println(line);
+      System.console().println(line);
       yield next.eval();
     }
   };
@@ -462,11 +537,11 @@ default String eval() {
 default String eval() {
   return switch (this) {
     case WriteLine(var line, var next) -> {
-      console().println(line);
+      System.console().println(line);
       yield next.eval();
     }
     case ReadLine(var next) -> {
-      var line = console().readLine();
+      var line = System.console().readLine();
       yield next.apply(line).eval();
     }
   };
@@ -517,6 +592,20 @@ sealed interface ConsoleDsl {
   record WriteLine(String line) implements ConsoleDsl {}
   record ReadLine() implements ConsoleDsl {}
   record AndThen() implements ConsoleDsl {}
+}
+```
+
+---
+
+# Otro Intento
+
+Usando un estilo monádico.
+
+```java {4}
+sealed interface ConsoleDsl {
+  record WriteLine(String line) implements ConsoleDsl {}
+  record ReadLine() implements ConsoleDsl {}
+  record AndThen(???) implements ConsoleDsl {}
 }
 ```
 
@@ -596,24 +685,6 @@ sealed interface ConsoleDsl {
 
 ---
 
-# Otro Intento (II)
-
-```java {7}
-sealed interface ConsoleDsl {
-  static void main() {
-    var program = new AndThen(
-      new AndThen(
-        new WriteLine("What's your name?"), 
-        _ -> new ReadLine()), 
-      name -> new WriteLine("Hello " + name + "!"));
-
-    program.eval();
-  }
-}
-```
-
----
-
 # Otro Intento (III)
 
 ```java {3}
@@ -628,89 +699,44 @@ sealed interface ConsoleDsl {
 
 # Otro Intento (III)
 
-```java {3-5}
+```java {3}
 sealed interface ConsoleDsl {
   static void main() {
-    var program = new WriteLine("What's your name?")
-      .andThen(_ -> new ReadLine()
-        .andThen(name -> new WriteLine("Hello " + name + "!")));
-
-    program.eval();
+    new WriteLine("What's your name?");
   }
 }
 ```
 
 ---
 
-# Otro Intento (IV)
+# Otro Intento (III)
 
-```java
+```java {4}
 sealed interface ConsoleDsl {
-  default String eval() {
-    return switch (this) {
-    };
+  static void main() {
+    new WriteLine("What's your name?")
+      .andThen(_ -> new ReadLine());
   }
 }
 ```
 
 ---
 
-# Otro Intento (IV)
+# Otro Intento (III)
 
-```java {4-7}
+```java {5}
 sealed interface ConsoleDsl {
-  default String eval() {
-    return switch (this) {
-      case WriteLine(var line) -> {
-        console().println(line);
-        yield null;
-      }
-    };
+  static void main() {
+    new WriteLine("What's your name?")
+      .andThen(_ -> new ReadLine())
+      .andThen(name -> new WriteLine("Hello " + name + "!"));
   }
 }
 ```
 
 ---
 
-# Otro Intento (IV)
-
-```java {8}
-sealed interface ConsoleDsl {
-  default String eval() {
-    return switch (this) {
-      case WriteLine(var line) -> {
-        console().println(line);
-        yield null;
-      }
-      case ReadLine _ -> console().readLine();
-    };
-  }
-}
-```
-
----
-
-# Otro Intento (IV)
-
-```java {9-10}
-sealed interface ConsoleDsl {
-  default String eval() {
-    return switch (this) {
-      case WriteLine(var line) -> {
-        console().println(line);
-        yield null;
-      }
-      case ReadLine _ -> console().readLine();
-      case AndThen(var current, var next) 
-        -> next.apply(current.eval()).eval();
-    };
-  }
-}
-```
-
----
-
-# Otro Intento (V)
+# Otro Intento (III)
 
 ```java
 sealed interface ConsoleDsl {
@@ -722,16 +748,38 @@ sealed interface ConsoleDsl {
 
 ---
 
-# Otro Intento (V)
+# Otro Intento (III)
 
-```java {3-4}
+```java {3}
 sealed interface ConsoleDsl {
   static void main() {
-    var program = new WriteLine("What's your name?")
-      .andThen(_ -> new ReadLine()
-        .andThen(name -> new WriteLine("Hello " + name + "!")));
+    prompt("What's your name?")
+      .andThen(name -> new WriteLine("Hello " + name + "!"));
+  }
+}
+```
 
-    program.eval();
+---
+
+# Otro Intento (III)
+
+```java
+sealed interface ConsoleDsl {
+  static ConsoleDsl sayHello(String name) {
+    return writeLine("Hello " + name + "!");
+  }
+}
+```
+
+---
+
+# Otro Intento (IV)
+
+```java {4}
+sealed interface ConsoleDsl {
+  static void main() {
+    prompt("What's your name?")
+      .andThen(ConsoleDsl::sayHello);
   }
 }
 ```
@@ -740,11 +788,13 @@ sealed interface ConsoleDsl {
 
 # Otro Intento (V)
 
-```java {3}
+Ahora es el momento de evaluar el programa.
+
+```java {6}
 sealed interface ConsoleDsl {
   static void main() {
     var program = prompt("What's your name?")
-      .andThen(name -> new WriteLine("Hello " + name + "!"));
+      .andThen(ConsoleDsl::sayHello);
 
     program.eval();
   }
@@ -757,8 +807,9 @@ sealed interface ConsoleDsl {
 
 ```java
 sealed interface ConsoleDsl {
-  static ConsoleDsl sayHello(String name) {
-    return writeLine("Hello " + name + "!");
+  default String eval() {
+    return switch (this) {
+    };
   }
 }
 ```
@@ -767,13 +818,15 @@ sealed interface ConsoleDsl {
 
 # Otro Intento (V)
 
-```java {4}
+```java {4-7}
 sealed interface ConsoleDsl {
-  static void main() {
-    var program = prompt("What's your name?")
-      .andThen(name -> new WriteLine("Hello " + name + "!"));
-
-    program.eval();
+  default String eval() {
+    return switch (this) {
+      case WriteLine(var line) -> {
+        System.console().println(line);
+        yield null;
+      }
+    };
   }
 }
 ```
@@ -782,13 +835,36 @@ sealed interface ConsoleDsl {
 
 # Otro Intento (V)
 
-```java {4}
+```java {8}
 sealed interface ConsoleDsl {
-  static void main() {
-    var program = prompt("What's your name?")
-      .andThen(ConsoleDsl::sayHello);
+  default String eval() {
+    return switch (this) {
+      case WriteLine(var line) -> {
+        System.console().println(line);
+        yield null;
+      }
+      case ReadLine _ -> System.console().readLine();
+    };
+  }
+}
+```
 
-    program.eval();
+---
+
+# Otro Intento (V)
+
+```java {9-10}
+sealed interface ConsoleDsl {
+  default String eval() {
+    return switch (this) {
+      case WriteLine(var line) -> {
+        System.console().println(line);
+        yield null;
+      }
+      case ReadLine _ -> System.console().readLine();
+      case AndThen(var current, var next) 
+        -> next.apply(current.eval()).eval();
+    };
   }
 }
 ```

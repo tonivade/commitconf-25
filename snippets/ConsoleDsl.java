@@ -47,13 +47,16 @@ sealed interface ConsoleDsl {
   }
 
   static void main() {
-
-    var program = new AndThen(
+    new AndThen(
       new WriteLine("What's your name?"), _ -> 
         new AndThen(new ReadLine(), 
           name -> new WriteLine("Hello " + name + "!")));
 
-    var program2 = prompt("What's your name?").andThen(ConsoleDsl::sayHello);
+    new WriteLine("What's your name?")
+      .andThen(_ -> new ReadLine())
+      .andThen(name -> new WriteLine("Hello " + name + "!"));
+
+    var program = prompt("What's your name?").andThen(ConsoleDsl::sayHello);
 
     program.eval();
   }

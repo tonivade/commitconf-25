@@ -50,6 +50,10 @@ sealed interface ConsoleCps {
   }
 
   static void main() {
+    new WriteLine("What's your name?", 
+      new ReadLine(name -> new WriteLine("Hello " + name + "!", 
+        new End())));
+
     var program = prompt("What's your name?", ConsoleCps::sayHello);
 
     program.eval();
