@@ -1957,7 +1957,7 @@ sealed interface Console<T> extends Program.Dsl<T> {
 # Sacar factor común (III)
 
 ```java {2-3}
-sealed interface Console<T> extends Program<T> {
+sealed interface Console<T> extends Program.Dsl<T> {
   record WriteLine(String line) implements Console<Void> {}
   record ReadLine() implements Console<String> {}
 }
@@ -1968,7 +1968,7 @@ sealed interface Console<T> extends Program<T> {
 # Sacar factor común (III)
 
 ```java
-sealed interface Console<T> extends Program<T> {
+sealed interface Console<T> extends Program.Dsl<T> {
   default T handle() {
     return (T) switch (this) {
       case WriteLine(var line) -> {
@@ -1986,7 +1986,7 @@ sealed interface Console<T> extends Program<T> {
 # Sacar factor común (III)
 
 ```java
-sealed interface Console<T> extends Program<T> {
+sealed interface Console<T> extends Program.Dsl<T> {
   static void main() {
     var program = prompt("What's your name?").flatMap(Console::sayHello);
 
@@ -2266,7 +2266,7 @@ sealed interface Game<T> extends Program.Dsl<Context, T> {
 # Sacar factor común (IV)
 
 ```java {11}
-sealed interface GameDsl<T> {
+sealed interface Game<T> extends Program.Dsl<Context, T> {
   static void main() {
     var program = prompt("Do you want to play a game? (y/n)")
       .andThen(answer -> {
@@ -2286,7 +2286,7 @@ sealed interface GameDsl<T> {
 # Sacar factor común (IV)
 
 ```java {4}
-sealed interface GameDsl<T> {
+sealed interface Game<T> extends Program.Dsl<Context, T> {
   static void main() {
     // sadly, it doesn't compile 🤕
     var program = prompt("Do you want to play a game? (y/n)")
@@ -2388,7 +2388,7 @@ sealed interface Console<T> extends Program.Dsl<Void, T> {
 # Sacar factor común (IV)
 
 ```java
-sealed interface GameDsl<T> {
+sealed interface Game<T> extends Program.Dsl<Context, T> {
   static void main() {
     var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
       .andThen(answer -> {
@@ -2408,7 +2408,7 @@ sealed interface GameDsl<T> {
 # Sacar factor común (IV)
 
 ```java {7}
-sealed interface GameDsl<T> {
+sealed interface Game<T> extends Program.Dsl<Context, T> {
   static void main() {
     var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
       .andThen(answer -> {
@@ -2459,7 +2459,7 @@ sealed interface Game<T> extends Program.Dsl<Context, T> {
 # Sacar factor común (IV)
 
 ```java {6}
-sealed interface GameDsl<T> {
+sealed interface Game<T> extends Program.Dsl<Context, T> {
   static void main() {
     var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
       .andThen(answer -> {
@@ -2479,7 +2479,7 @@ sealed interface GameDsl<T> {
 # Sacar factor común (IV)
 
 ```java {8}
-sealed interface GameDsl<T> {
+sealed interface Game<T> extends Program.Dsl<Context, T> {
   static void main() {
     var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
       .andThen(answer -> {
@@ -2512,7 +2512,7 @@ sealed interface Console<T> extends Program.Dsl<Void, T> {
 # Sacar factor común (IV)
 
 ```java {8}
-sealed interface GameDsl<T> {
+sealed interface Game<T> extends Program.Dsl<Context, T> {
   static void main() {
     var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
       .andThen(answer -> {
@@ -2532,7 +2532,7 @@ sealed interface GameDsl<T> {
 # Sacar factor común (IV)
 
 ```java {11}
-sealed interface GameDsl<T> {
+sealed interface Game<T> extends Program.Dsl<Context, T> {
   static void main() {
     var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
       .andThen(answer -> {
@@ -2555,19 +2555,45 @@ sealed interface GameDsl<T> {
 
 ---
 
+# Resumiendo :writing_hand:
+
+* Parte común.
+* Que se puede extender definiendo pequeños mini lenguajes.
+* Resulta complejo la composición de diferentes mini lenguajes.
+* Cada mini lenguaje define:
+  * un contexto (opcional).
+  * un conjunto de operaciones.
+  * una sintaxis:
+    * para definir otras operaciones para ese mini lenguaje.
+    * poder componerse ese lenguaje con otros mini lenguajes.
+
+---
+
 # Conclusiones
 
 * Definir diferentes DSLs y usarlos dentro de un mismo programa.
 * Definir pequeños mini programas.
 * Componer programas mayores a partir de estos mini programas.
-* Building blocks
+* Building blocks :bricks:
 
 ---
 
-# Qué falta?
+# Voy a hablar de mi libro :book:
 
-* Extension methods
-* Closures
+* A raíz de esto he desarrollado una librería que implementa lo que acabo de presentar aquí.
+* Con algunas mejoras:
+  * Generación automática de código repetitivo usando procesadores de anotaciones.
+  * Gestión de errores.
+  * Structured Concurrency.
+  * Retry and Repeat.
+* Si tenéis interés esta en mi github y se llama [diesel](https://github.com/tonivade/diesel).
+ 
+---
+
+# Qué falta? :face_with_head_bandage:
+
+* Tail recursion.
+* Mejor inferencia de tipos.
 
 ---
 
@@ -2583,21 +2609,24 @@ sealed interface GameDsl<T> {
 
 ---
 
-# Documentación Oficial
+# Documentación Oficial :books:
 
 
 ---
 
-# Artículos / Videos
+# Artículos / Videos :video_camera:
 
 
 ---
 
-# Enlaces
+# Enlaces :link:
 
 
 <!-- TODO:
 
-  - everything
+  - records
+  - pattern matching
+  - sealed interfaces
+  - ResumeDSL
 
     -->
