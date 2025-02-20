@@ -28,22 +28,18 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
     return (Program<S, String>) new ReadLine();
   }
 
+  @SuppressWarnings("unchecked")
   static <S extends Service> Program<S, String> prompt(String question) {
-    Program<S, Void> writeLine = writeLine(question);
-    return writeLine.andThen(readLine());
+    return (Program<S, String>) writeLine(question).andThen(readLine());
   }
 
   static <S extends Service> Program<S, Void> sayHello(String name) {
     return writeLine("Hello " + name);
   }
 
-  static <S extends Service> Program<S, String> whatsYourName() {
-    return prompt("What's your name?");
-  }
-
   @Override
   @SuppressWarnings("unchecked")
-  default T eval(Service service) {
+  default T handle(Service service) {
     return (T) switch (this) {
       case WriteLine(var line) -> {
         service.writeLine(line);
@@ -54,7 +50,7 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
   }
 
   static void main() {
-    var program = whatsYourName().flatMap(Console::sayHello);
+    var program = prompt("What's your name?").flatMap(Console::sayHello);
 
     program.eval(new Service() {});
   }

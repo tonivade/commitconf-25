@@ -13,10 +13,10 @@ sealed interface GameDsl<T> {
 
   record Done<T>(T value) implements GameDsl<T> {}
   record AndThen<T, R>(GameDsl<T> current, Function<T, GameDsl<R>> next) implements GameDsl<R> {
-    public R safeEval(State state) {
-      return next.apply(current.eval(state)).eval(state);
+    public R safeEval(Context context) {
+      return next.apply(current.eval(context)).eval(context);
     }
-  };
+  }
 
   static GameDsl<Void> writeLine(String line) {
     return new WriteLine(line);
@@ -51,7 +51,7 @@ sealed interface GameDsl<T> {
   }
 
   @SuppressWarnings("unchecked")
-  default T eval(State state) {
+  default T eval(Context context) {
     return (T) switch (this) {
       case WriteLine(var line) -> {
         console().println(line);
@@ -59,12 +59,12 @@ sealed interface GameDsl<T> {
       }
       case ReadLine _ -> console().readLine();
       case RandomNumber _ -> {
-        state.next();
+        context.set(ThreadLocalRandom.current().nextInt(10));
         yield null;
       }
-      case CheckNumber(var number) -> state.check(number);
+      case CheckNumber(var number) -> context.get() == number;
       case Done<T>(var value) -> value;
-      case AndThen<?, T> andThen -> andThen.safeEval(state);
+      case AndThen<?, T> andThen -> andThen.safeEval(context);
     };
   }
 
@@ -72,12 +72,8 @@ sealed interface GameDsl<T> {
     return writeLine(question).andThen(readLine());
   }
 
-  static GameDsl<Void> sayHello(String name) {
-    return writeLine("Hello " + name);
-  }
-
   static GameDsl<Void> loop() {
-    return prompt("Enter a number")
+    return prompt("Enter a number between 0 and 9")
       .map(Integer::parseInt)
       .andThen(GameDsl::checkNumber)
       .andThen(GameDsl::winOrContinue);
@@ -98,24 +94,22 @@ sealed interface GameDsl<T> {
   }
 
   static void main(String... args) {
-    var program = prompt("What's your name?")
-        .andThen(GameDsl::sayHello)
-        .andThen(prompt("Do you want to play a game? (Y/y)"))
+    var program = prompt("Do you want to play a game? (y/n)")
         .andThen(GameDsl::playOrExit);
 
-    program.eval(new State());
+    program.eval(new Context());
   }
 
-  final class State {
+  final class Context {
 
     private int value;
 
-    void next() {
-      this.value = ThreadLocalRandom.current().nextInt(10);
+    void set(int value) {
+      this.value = value;
     }
 
-    boolean check(int number) {
-      return number == value;
+    int get() {
+      return value;
     }
   }
 }

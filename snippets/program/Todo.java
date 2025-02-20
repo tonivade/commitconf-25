@@ -74,7 +74,7 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
 
   @Override
   @SuppressWarnings("unchecked")
-  default T eval(Repository repository) {
+  default T handle(Repository repository) {
     return (T) switch (this) {
       case Create(TodoEntity todo) -> {
         repository.create(todo);
@@ -179,8 +179,7 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
   }
 
   static void main() {
-    var program = Console.<Context>whatsYourName()
-      .flatMap(Console::sayHello)
+    var program = Console.<Context>writeLine("Welcome to TODO manager")
       .andThen(loop());
 
     program.eval(new Context());

@@ -5,23 +5,27 @@ import java.util.function.Function;
 
 sealed interface Program<S, T> {
 
-  record Done<S, T>(T value) implements Program<S, T> {
-    @Override public T eval(S state) {
-      return value;
-    }
-  }
+  record Done<S, T>(T value) implements Program<S, T> {}
 
   record FlatMap<S, T, R>(
       Program<S, T> current, 
       Function<T, Program<S, R>> next) implements Program<S, R> {
-    @Override public R eval(S state) {
+    public R safeEval(S state) {
       return next.apply(current.eval(state)).eval(state);
     }
   }
 
-  non-sealed interface Dsl<S, T> extends Program<S, T> {}
+  non-sealed interface Dsl<S, T> extends Program<S, T> {
+     T handle(S state);
+  }
 
-  T eval(S state);
+  default T eval(S state) {
+    return switch (this) {
+      case Done<S, T>(T value) -> value;
+      case FlatMap<S, ?, T> flatMap -> flatMap.safeEval(state);
+      case Dsl<S, T> dsl -> dsl.handle(state);
+    };
+  }
 
   static <S, T> Program<S, T> done(T value) {
     return new Done<>(value);

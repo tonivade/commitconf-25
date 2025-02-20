@@ -7,7 +7,7 @@ footer: me@tonivade.es
 author: Antonio Muñoz
 transition: none
 backgroundColor: #eee
-backgroundImage: url('https://tonivade.es/commitconf25/images/background.png')
+backgroundImage: url('images/background.png')
 color: #000
 ---
 
@@ -17,7 +17,7 @@ Aprovechando las nuevas herramientas del lenguaje
 
 <!-- _color: #fff -->
 <!-- _footer: _Antonio Muñoz_ -->
-<!-- _backgroundImage: url('https://tonivade.es/commitconf25/images/frontpage.jpg') -->
+<!-- _backgroundImage: url('images/frontpage.jpg') -->
 
 ---
 
@@ -109,25 +109,46 @@ order by people.age ASC
 # DSLs internos
 
 * Están implementados como parte del propio lenguaje donde se van a usar.
-* Ejemplos: JOOQ, gradle, Assertj.
 * Más sencillos de implementar.
 * Están limitados a las capacidades del lenguaje anfitrión.
 
 ---
 
-# De qué voy a hablar hoy?
+# DSLs internos (II)
 
-* DSLs internos implementados en Java.
+* Hay dos tipos de DSLs internos:
+  * Estáticos
+    * Ejemplos: JOOQ, Assertj.
+  * Dinámicos
+    * Ejemplos: Gradle.
 
 ---
 
-# Por qué Java?
+# De qué voy a hablar hoy?
 
-* Soy javero.
-* Novedades Java 21:
+* Un breve resumen de las novedades más relevantes en Java:
   * Records.
   * Pattern matching.
   * Sealed interfaces.
+* DSLs internos estáticos implementados en Java. Brevemente.
+* DSLs internos dinámicos implementados en Java. Mas extensamente.
+
+---
+
+# Records
+
+---
+
+# Pattern Matching
+
+---
+
+# Sealed interfaces
+
+---
+
+# Más información
+
 * Mi [charla del año pasado](https://www.youtube.com/watch?v=RbLkJXagQXw).
 
 ---
@@ -164,10 +185,6 @@ order by people.age ASC
 ---
 
 # Un programa muy sencillo
-
-```bash
-
-```
 
 ---
 
@@ -570,6 +587,12 @@ default String eval() {
 
 ---
 
+# Primer Intento (V)
+
+![w:700](images/cps.png)
+
+---
+
 # Otro Intento
 
 Usando un estilo monádico.
@@ -871,10 +894,1673 @@ sealed interface ConsoleDsl {
 
 ---
 
-# Un DSL mas divertido
+# Otro Intento (V)
 
-* Game
-* Añadir estado
+![w:700](images/monad.png)
+
+---
+
+# Un DSL más divertido
+
+* Un juego sencillo.
+* Adivinar un número entre 0 a 9.
+* Añadir estado.
+
+---
+
+# Un DSL más divertido
+
+```bash {1}
+# Do you want to play a game? (y/n)
+```
+
+---
+
+# Un DSL más divertido
+
+```bash {2}
+# Do you want to play a game? (y/n)
+y
+```
+
+---
+
+# Un DSL más divertido
+
+```bash {3}
+# Do you want to play a game? (y/n)
+y
+# Enter a number between 0 to 9
+```
+
+---
+
+# Un DSL más divertido
+
+```bash {4}
+# Do you want to play a game? (y/n)
+y
+# Enter a number between 0 to 9
+1
+```
+
+---
+
+# Un DSL más divertido
+
+```bash {5}
+# Do you want to play a game? (y/n)
+y
+# Enter a number between 0 to 9
+1
+# Enter a number between 0 to 9
+```
+
+---
+
+# Un DSL más divertido
+
+```bash {6}
+# Do you want to play a game? (y/n)
+y
+# Enter a number between 0 to 9
+1
+# Enter a number between 0 to 9
+2
+```
+
+---
+
+# Un DSL más divertido
+
+```bash {7}
+# Do you want to play a game? (y/n)
+y
+# Enter a number between 0 to 9
+1
+# Enter a number between 0 to 9
+2
+# YOU WIN!
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java
+sealed interface GameDsl {
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {2-3}
+sealed interface GameDsl {
+  record WriteLine(String line) implements GameDsl {}
+  record ReadLine() implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {4-5}
+sealed interface GameDsl {
+  record WriteLine(String line) implements GameDsl {}
+  record ReadLine() implements GameDsl {}
+  record RandomNumber() implements GameDsl {}
+  record CheckNumber(int number) implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {6}
+sealed interface GameDsl {
+  record WriteLine(String line) implements GameDsl {}
+  record ReadLine() implements GameDsl {}
+  record RandomNumber() implements GameDsl {}
+  record CheckNumber(int number) implements GameDsl {}
+  record AndThen() implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {6}
+sealed interface GameDsl {
+  record WriteLine(String line) implements GameDsl {}
+  record ReadLine() implements GameDsl {}
+  record RandomNumber() implements GameDsl {}
+  record CheckNumber(int number) implements GameDsl {}
+  record AndThen(???) implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {7}
+sealed interface GameDsl {
+  record WriteLine(String line) implements GameDsl {}
+  record ReadLine() implements GameDsl {}
+  record RandomNumber() implements GameDsl {}
+  record CheckNumber(int number) implements GameDsl {}
+  record AndThen(
+    GameDsl current) 
+      implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {7}
+sealed interface GameDsl {
+  record WriteLine(String line) implements GameDsl {}
+  record ReadLine() implements GameDsl {}
+  record RandomNumber() implements GameDsl {}
+  record CheckNumber(int number) implements GameDsl {}
+  record AndThen(
+    GameDsl current, ???) 
+      implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {8}
+sealed interface GameDsl {
+  record WriteLine(String line) implements GameDsl {}
+  record ReadLine() implements GameDsl {}
+  record RandomNumber() implements GameDsl {}
+  record CheckNumber(int number) implements GameDsl {}
+  record AndThen(
+    GameDsl current, 
+    Function<?, GameDsl> next) 
+      implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {1}
+sealed interface GameDsl<T> {
+  record WriteLine(String line) implements GameDsl {}
+  record ReadLine() implements GameDsl {}
+  record RandomNumber() implements GameDsl {}
+  record CheckNumber(int number) implements GameDsl {}
+  record AndThen(
+    GameDsl current, 
+    Function<?, GameDsl> next) 
+      implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {2}
+sealed interface GameDsl<T> {
+  record WriteLine(String line) implements GameDsl<Void> {}
+  record ReadLine() implements GameDsl {}
+  record RandomNumber() implements GameDsl {}
+  record CheckNumber(int number) implements GameDsl {}
+  record AndThen(
+    GameDsl current, 
+    Function<?, GameDsl> next) 
+      implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {3}
+sealed interface GameDsl<T> {
+  record WriteLine(String line) implements GameDsl<Void> {}
+  record ReadLine() implements GameDsl<String> {}
+  record RandomNumber() implements GameDsl {}
+  record CheckNumber(int number) implements GameDsl {}
+  record AndThen(
+    GameDsl current, 
+    Function<?, GameDsl> next) 
+      implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {4}
+sealed interface GameDsl<T> {
+  record WriteLine(String line) implements GameDsl<Void> {}
+  record ReadLine() implements GameDsl<String> {}
+  record RandomNumber() implements GameDsl<Void> {}
+  record CheckNumber(int number) implements GameDsl {}
+  record AndThen(
+    GameDsl current, 
+    Function<?, GameDsl> next) 
+      implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {5}
+sealed interface GameDsl<T> {
+  record WriteLine(String line) implements GameDsl<Void> {}
+  record ReadLine() implements GameDsl<String> {}
+  record RandomNumber() implements GameDsl<Void> {}
+  record CheckNumber(int number) implements GameDsl<Boolean> {}
+  record AndThen(
+    GameDsl current, 
+    Function<?, GameDsl> next) 
+      implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {6,9}
+sealed interface GameDsl<T> {
+  record WriteLine(String line) implements GameDsl<Void> {}
+  record ReadLine() implements GameDsl<String> {}
+  record RandomNumber() implements GameDsl<Void> {}
+  record CheckNumber(int number) implements GameDsl<Boolean> {}
+  record AndThen<T>(
+    GameDsl current, 
+    Function<?, GameDsl> next) 
+      implements GameDsl<T> {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {7}
+sealed interface GameDsl<T> {
+  record WriteLine(String line) implements GameDsl<Void> {}
+  record ReadLine() implements GameDsl<String> {}
+  record RandomNumber() implements GameDsl<Void> {}
+  record CheckNumber(int number) implements GameDsl<Boolean> {}
+  record AndThen<T>(
+    GameDsl<T> current, 
+    Function<?, GameDsl> next) 
+      implements GameDsl<T> {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {8}
+sealed interface GameDsl<T> {
+  record WriteLine(String line) implements GameDsl<Void> {}
+  record ReadLine() implements GameDsl<String> {}
+  record RandomNumber() implements GameDsl<Void> {}
+  record CheckNumber(int number) implements GameDsl<Boolean> {}
+  record AndThen<T>(
+    GameDsl<T> current, 
+    Function<T, GameDsl<?>> next) 
+      implements GameDsl<T> {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {6-9}
+sealed interface GameDsl<T> {
+  record WriteLine(String line) implements GameDsl<Void> {}
+  record ReadLine() implements GameDsl<String> {}
+  record RandomNumber() implements GameDsl<Void> {}
+  record CheckNumber(int number) implements GameDsl<Boolean> {}
+  record AndThen<X, T>(
+    GameDsl<X> current, 
+    Function<X, GameDsl<T>> next) 
+      implements GameDsl<T> {}
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {3}
+sealed interface GameDsl<T> {
+  static void main() {
+    prompt("Do you want to play a game? (y/n)");
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {4-9}
+sealed interface GameDsl<T> {
+  static void main() {
+    prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return ???;
+        }
+        return new WriteLine("Bye!");
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {6}
+sealed interface GameDsl<T> {
+  static void main() {
+    prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return new RandomNumber();
+        }
+        return new WriteLine("Bye!");
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {6}
+sealed interface GameDsl<T> {
+  static void main() {
+    prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return new RandomNumber().andThen(_ -> play());
+        }
+        return new WriteLine("Bye!");
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {3}
+sealed interface GameDsl<T> {
+  static GameDsl<Void> play() {
+    return prompt("Enter a number between 0 to 9");
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {4-6}
+sealed interface GameDsl<T> {
+  static GameDsl<Void> play() {
+    return prompt("Enter a number between 0 to 9")
+      .andThen(number -> {
+        return new CheckNumber(number);
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {5}
+sealed interface GameDsl<T> {
+  static GameDsl<Void> play() {
+    return prompt("Enter a number between 0 to 9")
+      .andThen(number -> {
+        return new CheckNumber(Integer.parseInt(number));
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {5-10}
+sealed interface GameDsl<T> {
+  static GameDsl<Void> play() {
+    return prompt("Enter a number between 0 to 9")
+      .andThen(number -> new CheckNumber(Integer.parseInt(number)))
+      .andThen(result -> {
+        if (result) {
+          return new WriteLine("YOU WIN!");
+        }
+        return ???;
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {9}
+sealed interface GameDsl<T> {
+  static GameDsl<Void> play() {
+    return prompt("Enter a number between 0 to 9")
+      .andThen(number -> new CheckNumber(Integer.parseInt(number)))
+      .andThen(result -> {
+        if (result) {
+          return new WriteLine("YOU WIN!");
+        }
+        return play();
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {11}
+sealed interface GameDsl<T> {
+  static void main() {
+    var program = prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return new RandomNumber().andThen(_ -> play());
+        }
+        return new WriteLine("Bye!");
+      });
+
+    program.eval();
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {4-8}
+sealed interface GameDsl<T> {
+  default T eval() {
+    return switch (this) {
+      case WriteLine(var line) -> {
+        System.console().println(line);
+        yield null;
+      }
+      case ReadLine _ -> System.console().readLine();
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {9}
+sealed interface GameDsl<T> {
+  default T eval() {
+    return switch (this) {
+      case WriteLine(var line) -> {
+        System.console().println(line);
+        yield null;
+      }
+      case ReadLine _ -> System.console().readLine();
+      case RandomNumber _ -> ???
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {10}
+sealed interface GameDsl<T> {
+  default T eval() {
+    return switch (this) {
+      case WriteLine(var line) -> {
+        System.console().println(line);
+        yield null;
+      }
+      case ReadLine _ -> System.console().readLine();
+      case RandomNumber _ -> {
+        ThreadLocalRandom.current().nextInt(10);
+        yield null;
+      }
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {2,10}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    return switch (this) {
+      case WriteLine(var line) -> {
+        System.console().println(line);
+        yield null;
+      }
+      case ReadLine _ -> System.console().readLine();
+      case RandomNumber _ -> {
+        context.set(ThreadLocalRandom.current().nextInt(10));
+        yield null;
+      }
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {8}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    return switch (this) {
+      case RandomNumber _ -> {
+        context.set(ThreadLocalRandom.current().nextInt(10));
+        yield null;
+      }
+      case CheckNumber(var number) -> ???;
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {8}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    return switch (this) {
+      case RandomNumber _ -> {
+        context.set(ThreadLocalRandom.current().nextInt(10));
+        yield null;
+      }
+      case CheckNumber(var number) -> context.get() == number;
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {4}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    return switch (this) {
+      case AndThen(var current, var next) -> ???;
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {4}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    return switch (this) {
+      case AndThen<?, ?>(var current, var next) -> ???;
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {2,4}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    return switch (this) {
+      case AndThen<?, T>(var current, var next) -> ???;
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {5}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    return switch (this) {
+      case AndThen<?, T>(var current, var next) -> {
+        current.eval(context);
+      }
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {5-6}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    return switch (this) {
+      case AndThen<?, T>(var current, var next) -> {
+        var value = current.eval(context);
+        yield next.apply(value);
+      }
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {6}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    return switch (this) {
+      case AndThen<?, T>(var current, var next) -> {
+        var value = current.eval(context);
+        yield next.apply(value).eval(context);
+      }
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {5}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    return switch (this) {
+      case AndThen<?, T>(var current, var next) -> {
+        // looks good, but it doesn't work 🤦
+        var value = current.eval(context);
+        yield next.apply(value).eval(context);
+      }
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {5-7}
+sealed interface GameDsl<T> {
+  record AndThen<X, T>(
+      GameDsl<X> current, 
+      Function<X, GameDsl<T>> next) implements GameDsl<T> {
+    public T safeEval(Context context) {
+      return next.apply(current.eval(context)).eval(context);
+    }
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {4}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    return switch (this) {
+      case AndThen<?, T> andThen -> andThen.safeEval(context);
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {4}
+sealed interface GameDsl<T> {
+  // the compiler still complains here 😢
+  default T eval(Context context) {
+    return switch (this) {
+      case AndThen<?, T> andThen -> andThen.safeEval(context);
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {4}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    // we have to add this cast to make the compiler happy
+    return (T) switch (this) {
+      case AndThen<?, T> andThen -> andThen.safeEval(context);
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java
+  final class Context {
+
+    private int value;
+
+    void set(int value) { this.value = value; }
+
+    int get() { return value; }
+  }
+```
+
+---
+
+# Un DSL más divertido (V)
+
+```java {4}
+sealed interface GameDsl<T> {
+  static GameDsl<Void> play() {
+    return prompt("Enter a number between 0 to 9")
+      .andThen(number -> new CheckNumber(Integer.parseInt(number)))
+      .andThen(result -> {
+        if (result) {
+          return new WriteLine("YOU WIN!");
+        }
+        return play();
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (V)
+
+```java {4-5}
+sealed interface GameDsl<T> {
+  static GameDsl<Void> play() {
+    return prompt("Enter a number between 0 to 9")
+      .map(Integer::parseInt)
+      .andThen(CheckNumber::new)
+      .andThen(result -> {
+        if (result) {
+          return new WriteLine("YOU WIN!");
+        }
+        return play();
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (V)
+
+```java {2}
+sealed interface GameDsl<T> {
+  record Done<T>(T value) implements GameDsl<T> {}
+}
+```
+
+---
+
+# Un DSL más divertido (V)
+
+```java {4-6}
+sealed interface GameDsl<T> {
+  record Done<T>(T value) implements GameDsl<T> {}
+
+  default <R> GameDsl<R> map(Function<T, R> mapper) {
+    return andThen(mapper.andThen(Done::new));
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (V)
+
+```java {4}
+sealed interface GameDsl<T> {
+  default T eval(Context context) {
+    return (T) switch (this) {
+      case Done<T>(var value) -> value;
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común
+
+* Esto empieza a parecerse sospechosamente al algo familiar
+* Una monada.
+* Concretamente una free monad.
+
+---
+
+# Sacar factor común
+
+```java
+sealed interface Program {
+
+}
+```
+
+---
+
+# Sacar factor común
+
+```java {1}
+sealed interface Program<T> {
+
+}
+```
+
+---
+
+# Sacar factor común
+
+```java {2}
+sealed interface Program<T> {
+  record Done<T>(T value) implements Program<T> {}
+}
+```
+
+---
+
+# Sacar factor común
+
+```java {3-6}
+sealed interface Program<T> {
+  record Done<T>(T value) implements Program<T> {}
+  record AndThen<X, T>(
+    Program<X> current, 
+    Function<X, Program<T>> next) 
+      implements Program<T> {}
+}
+```
+
+---
+
+# Sacar factor común
+
+```java {7}
+sealed interface Program<T> {
+  record Done<T>(T value) implements Program<T> {}
+  record AndThen<X, T>(
+    Program<X> current, 
+    Function<X, Program<T>> next) 
+      implements Program<T> {}
+  interface Dsl<T> extends Program<T> {}
+}
+```
+
+---
+
+# Sacar factor común
+
+```java {7}
+sealed interface Program<T> {
+  record Done<T>(T value) implements Program<T> {}
+  record AndThen<X, T>(
+    Program<X> current, 
+    Function<X, Program<T>> next) 
+      implements Program<T> {}
+  non-sealed interface Dsl<T> extends Program<T> {}
+}
+```
+
+---
+
+# Sacar factor común
+
+```java {2-4}
+sealed interface Program<T> {
+  default <R> Program<R> andThen(Function<T, Program<R>> next) {
+    return new AndThen<>(this, next);
+  }
+}
+```
+
+---
+
+# Sacar factor común
+
+```java {2-4}
+sealed interface Program<T> {
+  default <R> Program<R> map(Function<T, R> mapper) {
+    return andThen(mapper.andThen(Done::new));
+  }
+}
+```
+
+---
+
+# Sacar factor común (II)
+
+```java {4}
+sealed interface Program<T> {
+  default T eval() {
+    return switch (this) {
+      case Done<T>(T value) -> value;
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (II)
+
+```java {5}
+sealed interface Program<T> {
+  default T eval() {
+    return switch (this) {
+      case Done<T>(T value) -> value;
+      case AndThen<?, T> andThen -> andThen.safeEval();
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (II)
+
+```java {6}
+sealed interface Program<T> {
+  default T eval() {
+    return switch (this) {
+      case Done<T>(T value) -> value;
+      case AndThen<?, T> andThen -> andThen.safeEval();
+      case Dsl<T> dsl -> dsl.handle();
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (III)
+
+```java
+sealed interface Console<T> extends Program.Dsl<T> {
+
+}
+```
+
+---
+
+# Sacar factor común (III)
+
+```java {2-3}
+sealed interface Console<T> extends Program<T> {
+  record WriteLine(String line) implements Console<Void> {}
+  record ReadLine() implements Console<String> {}
+}
+```
+
+---
+
+# Sacar factor común (III)
+
+```java
+sealed interface Console<T> extends Program<T> {
+  default T handle() {
+    return (T) switch (this) {
+      case WriteLine(var line) -> {
+        System.console().println(line);
+        yield null;
+      }
+      case ReadLine _ -> System.console().readLine();
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (III)
+
+```java
+sealed interface Console<T> extends Program<T> {
+  static void main() {
+    var program = prompt("What's your name?").flatMap(Console::sayHello);
+
+    program.eval();
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java
+sealed interface Game<T> extends Program.Dsl<T> {
+
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java
+sealed interface Game<T> extends Program.Dsl<T> {
+  record RandomNumber() implements Game<Void> {}
+  record CheckNumber(int number) implements Game<Boolean> {}
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java
+sealed interface Game<T> extends Program.Dsl<T> {
+  default T handle() {
+    return (T) switch (this) {
+      case RandomNumber _ -> {
+        state.set(ThreadLocalRandom.current().nextInt(10));
+        yield null;
+      }
+      case CheckNumber(var number) -> state.get() == number;
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {5,8}
+sealed interface Game<T> extends Program.Dsl<T> {
+  default T handle() {
+    return (T) switch (this) {
+      case RandomNumber _ -> {
+        context.set(ThreadLocalRandom.current().nextInt(10));
+        yield null;
+      }
+      case CheckNumber(var number) -> context.get() == number;
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {2}
+sealed interface Game<T> extends Program.Dsl<T> {
+  default T handle(???) {
+    return (T) switch (this) {
+      case RandomNumber _ -> {
+        context.set(ThreadLocalRandom.current().nextInt(10));
+        yield null;
+      }
+      case CheckNumber(var number) -> context.get() == number;
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java
+sealed interface Program<T> {
+  record Done<T>(T value) implements Program<T> {}
+  record AndThen<X, T>(
+    Program<X> current, 
+    Function<X, Program<T>> next) 
+      implements Program<T> {}
+  non-sealed interface Dsl<T> extends Program<T> {}
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {1}
+sealed interface Program<S, T> {
+  record Done<T>(T value) implements Program<T> {}
+  record AndThen<X, T>(
+    Program<X> current, 
+    Function<X, Program<T>> next) 
+      implements Program<T> {}
+  non-sealed interface Dsl<T> extends Program<T> {}
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {2}
+sealed interface Program<S, T> {
+  record Done<S, T>(T value) implements Program<S, T> {}
+  record AndThen<X, T>(
+    Program<X> current, 
+    Function<X, Program<T>> next) 
+      implements Program<T> {}
+  non-sealed interface Dsl<T> extends Program<T> {}
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {3-6}
+sealed interface Program<S, T> {
+  record Done<S, T>(T value) implements Program<S, T> {}
+  record AndThen<S, X, T>(
+    Program<S, X> current, 
+    Function<S, X, Program<S, T>> next) 
+      implements Program<S, T> {}
+  non-sealed interface Dsl<T> extends Program<T> {}
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {7}
+sealed interface Program<S, T> {
+  record Done<S, T>(T value) implements Program<S, T> {}
+  record AndThen<S, X, T>(
+    Program<S, X> current, 
+    Function<S, X, Program<S, T>> next) 
+      implements Program<S, T> {}
+  non-sealed interface Dsl<S, T> extends Program<S, T> {}
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java
+sealed interface Program<S, T> {
+  default T eval() {
+    return switch (this) {
+      case Done<T>(T value) -> value;
+      case AndThen<?, T> andThen -> andThen.safeEval();
+      case Dsl<T> dsl -> dsl.handle();
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {2}
+sealed interface Program<S, T> {
+  default T eval(S state) {
+    return switch (this) {
+      case Done<T>(T value) -> value;
+      case AndThen<?, T> andThen -> andThen.safeEval();
+      case Dsl<T> dsl -> dsl.handle();
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {4}
+sealed interface Program<S, T> {
+  default T eval(S state) {
+    return switch (this) {
+      case Done<S, T>(T value) -> value;
+      case AndThen<?, T> andThen -> andThen.safeEval();
+      case Dsl<T> dsl -> dsl.handle();
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {5}
+sealed interface Program<S, T> {
+  default T eval(S state) {
+    return switch (this) {
+      case Done<S, T>(T value) -> value;
+      case AndThen<S, ?, T> andThen -> andThen.safeEval(state);
+      case Dsl<T> dsl -> dsl.handle();
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {6}
+sealed interface Program<S, T> {
+  default T eval(S state) {
+    return switch (this) {
+      case Done<S, T>(T value) -> value;
+      case AndThen<S, ?, T> andThen -> andThen.safeEval(state);
+      case Dsl<S, T> dsl -> dsl.handle(state);
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {1}
+sealed interface Game<T> extends Program.Dsl<Context, T> {
+  default T handle() {
+    return (T) switch (this) {
+      case RandomNumber _ -> {
+        context.set(ThreadLocalRandom.current().nextInt(10));
+        yield null;
+      }
+      case CheckNumber(var number) -> context.get() == number;
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {2}
+sealed interface Game<T> extends Program.Dsl<Context, T> {
+  default T handle(Context context) {
+    return (T) switch (this) {
+      case RandomNumber _ -> {
+        context.set(ThreadLocalRandom.current().nextInt(10));
+        yield null;
+      }
+      case CheckNumber(var number) -> context.get() == number;
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {11}
+sealed interface GameDsl<T> {
+  static void main() {
+    var program = prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return new RandomNumber().andThen(_ -> play());
+        }
+        return new WriteLine("Bye!");
+      });
+
+    program.eval();
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {4}
+sealed interface GameDsl<T> {
+  static void main() {
+    // sadly, it doesn't compile 🤕
+    var program = prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return new RandomNumber().andThen(_ -> play());
+        }
+        return new WriteLine("Bye!");
+      });
+
+    program.eval();
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```
+snippets/program/Game.java:54: error: incompatible types: cannot infer type-variable(s) R#1
+        .flatMap(answer -> {
+                ^
+    (argument mismatch; bad return type in lambda expression
+      no instance(s) of type variable(s) R#2 exist so that Program<Context,R#2> conforms to Program<CAP#1,R#1>)
+  where R#1,T,S,R#2 are type-variables:
+    R#1 extends Object declared in method <R#1>flatMap(Function<T,Program<S,R#1>>)
+    T extends Object declared in interface Program
+    S extends Object declared in interface Program
+    R#2 extends Object declared in method <R#2>andThen(Program<S,R#2>)
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of 
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {2}
+sealed interface Console<T> extends Program.Dsl<Void, T> {
+  static Console<String> prompt(String question) {
+    return writeLine(question).andThen(readLine());
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {2}
+sealed interface Console<T> extends Program.Dsl<Void, T> {
+  static Program<?, String> prompt(String question) {
+    return writeLine(question).andThen(readLine());
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {2}
+sealed interface Console<T> extends Program.Dsl<Void, T> {
+  static <S> Program<S, String> prompt(String question) {
+    return writeLine(question).andThen(readLine());
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {4}
+sealed interface Console<T> extends Program.Dsl<Void, T> {
+  static <S> Program<S, String> prompt(String question) {
+    // still doesn't compile 😢
+    return writeLine(question).andThen(readLine());
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {3}
+sealed interface Console<T> extends Program.Dsl<Void, T> {
+  static <S> Program<S, String> prompt(String question) {
+    // this cast is safe 😆
+    return (Program<S, String>) writeLine(question).andThen(readLine());
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java
+sealed interface GameDsl<T> {
+  static void main() {
+    var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return new RandomNumber().andThen(_ -> play());
+        }
+        return new WriteLine("Bye!");
+      });
+
+    program.eval();
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {7}
+sealed interface GameDsl<T> {
+  static void main() {
+    var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          // now it fails here 💀
+          return new RandomNumber().andThen(_ -> play());
+        }
+        return new WriteLine("Bye!");
+      });
+
+    program.eval();
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```
+snippets/program/Game.java:56: error: method andThen in interface Program<S,T> cannot be applied to given types;
+            return new RandomNumber().andThen(play());
+                                     ^
+  required: Program<State,R>
+  found:    Program<Context,Void>
+  reason: cannot infer type-variable(s) R
+    (argument mismatch; Program<Context,Void> cannot be converted to Program<State,R>)
+  where R,S,T are type-variables:
+    R extends Object declared in method <R>andThen(Program<S,R>)
+    S extends Object declared in interface Program
+    T extends Object declared in interface Program
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java
+sealed interface Game<T> extends Program.Dsl<Context, T> {
+  static <S extends Context> Program<S, Void> randomNumber() {
+    return (Program<S, Void>) new RandomNumber();
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {6}
+sealed interface GameDsl<T> {
+  static void main() {
+    var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return Game.<Context>randomNumber().andThen(_ -> play());
+        }
+        return new WriteLine("Bye!");
+      });
+
+    program.eval();
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {8}
+sealed interface GameDsl<T> {
+  static void main() {
+    var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return Game.<Context>randomNumber().andThen(_ -> play());
+        }
+        return new WriteLine("Bye!");
+      });
+
+    program.eval();
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {3}
+sealed interface Console<T> extends Program.Dsl<Void, T> {
+  static <S> Program<S, Void> writeLine(String line) {
+    // this cast is safe 😆
+    return (Program<S, Void>) new WriteLine(line);
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {8}
+sealed interface GameDsl<T> {
+  static void main() {
+    var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return Game.<Context>randomNumber().andThen(_ -> play());
+        }
+        return writeLine("Bye!");
+      });
+
+    program.eval();
+  }
+}
+```
+
+---
+
+# Sacar factor común (IV)
+
+```java {11}
+sealed interface GameDsl<T> {
+  static void main() {
+    var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return Game.<Context>randomNumber().andThen(_ -> play());
+        }
+        return writeLine("Bye!");
+      });
+
+    program.eval(new Context());
+  }
+}
+```
+
+---
+
+# Sacar Factor Común
+
+![width:700px Picture with a diagram of program and different DSLs](images/program.png)
+
+---
+
+# Conclusiones
+
+* Definir diferentes DSLs y usarlos dentro de un mismo programa.
+* Definir pequeños mini programas.
+* Componer programas mayores a partir de estos mini programas.
+* Building blocks
 
 ---
 
