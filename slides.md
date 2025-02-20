@@ -572,8 +572,8 @@ sealed interface ConsoleDsl {
 ```java {4}
 sealed interface ConsoleDsl {
   static void main() {
-    new WriteLine("What's your name?")
-      .andThen(_ -> new ReadLine());
+    new AndThen(
+      new WriteLine("What's your name?"), _ -> new ReadLine());
   }
 }
 ```
@@ -582,12 +582,14 @@ sealed interface ConsoleDsl {
 
 # Otro Intento (II)
 
-```java {5}
+```java {3,7}
 sealed interface ConsoleDsl {
   static void main() {
-    new WriteLine("What's your name?")
-      .andThen(_ -> new ReadLine()
-        .andThen(name -> new WriteLine("Hello " + name + "!")));
+    new AndThen(
+      new AndThen(
+        new WriteLine("What's your name?"), 
+        _ -> new ReadLine()), 
+      name -> new WriteLine("Hello " + name + "!"));
   }
 }
 ```
@@ -599,9 +601,11 @@ sealed interface ConsoleDsl {
 ```java {7}
 sealed interface ConsoleDsl {
   static void main() {
-    var program = new WriteLine("What's your name?")
-      .andThen(_ -> new ReadLine()
-        .andThen(name -> new WriteLine("Hello " + name + "!")));
+    var program = new AndThen(
+      new AndThen(
+        new WriteLine("What's your name?"), 
+        _ -> new ReadLine()), 
+      name -> new WriteLine("Hello " + name + "!"));
 
     program.eval();
   }
@@ -616,6 +620,22 @@ sealed interface ConsoleDsl {
 sealed interface ConsoleDsl {
   default ConsoleDsl andThen(Function<String, ConsoleDsl> next) {
     return new AndThen(this, next);
+  }
+}
+```
+
+---
+
+# Otro Intento (III)
+
+```java {3-5}
+sealed interface ConsoleDsl {
+  static void main() {
+    var program = new WriteLine("What's your name?")
+      .andThen(_ -> new ReadLine()
+        .andThen(name -> new WriteLine("Hello " + name + "!")));
+
+    program.eval();
   }
 }
 ```
