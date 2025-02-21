@@ -2,8 +2,6 @@ package program;
 
 import static program.Console.writeLine;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 sealed interface Game<T> extends Program.Dsl<Game.State, T> {
 
   interface State {
@@ -11,29 +9,37 @@ sealed interface Game<T> extends Program.Dsl<Game.State, T> {
     int get();
   }
 
-  record RandomNumber() implements Game<Void> {}
-  record CheckNumber(int number) implements Game<Boolean> {}
+  record SetValue(int value) implements Game<Void> {}
+  record GetValue() implements Game<Integer> {}
 
   @SuppressWarnings("unchecked")
-  static <S extends State> Program<S, Void> randomNumber() {
-    return (Program<S, Void>) new RandomNumber();
+  static <S extends State> Program<S, Void> setValue(int value) {
+    return (Program<S, Void>) new SetValue(value);
   }
 
   @SuppressWarnings("unchecked")
-  static <S extends State> Program<S, Boolean> checkNumber(int number) {
-    return (Program<S, Boolean>) new CheckNumber(number);
+  static <S extends State> Program<S, Integer> getValue() {
+    return (Program<S, Integer>) new GetValue();
   }
 
   @Override
   @SuppressWarnings("unchecked")
   default T handle(State state) {
     return (T) switch (this) {
-      case RandomNumber _ -> {
-        state.set(ThreadLocalRandom.current().nextInt(10));
+      case SetValue(int value) -> {
+        state.set(value);
         yield null;
       }
-      case CheckNumber(var number) -> state.get() == number;
+      case GetValue() -> state.get();
     };
+  }
+
+  static Program<Context, Void> randomNumber() {
+    return Random.<Context>nextInt(10).flatMap(Game::setValue);
+  }
+
+  static Program<Context, Boolean> checkNumber(int number) {
+    return Game.<Context>getValue().map(value -> value == number);
   }
 
   static Program<Context, Void> play() {
@@ -49,10 +55,10 @@ sealed interface Game<T> extends Program.Dsl<Game.State, T> {
   }
 
   static void main() {
-    var program = doYouWantToPlayAGame()
+    var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
         .flatMap(answer -> {
           if (answer.equalsIgnoreCase("y")) {
-            return Game.<Context>randomNumber().andThen(play());
+            return randomNumber().andThen(play());
           }
           return writeLine("Bye!");
         });
@@ -60,11 +66,7 @@ sealed interface Game<T> extends Program.Dsl<Game.State, T> {
     program.eval(new Context());
   }
 
-  static Program<Context, String> doYouWantToPlayAGame() {
-    return Console.prompt("Do you want to play a game? (y/n)");
-  }
-
-  final class Context implements Game.State, Console.Service {
+  final class Context implements Game.State {
 
     private int value;
 

@@ -185,7 +185,7 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
     program.eval(new Context());
   }
 
-  final class Context implements Todo.Repository, Console.Service {
+  final class Context implements Todo.Repository {
 
     private final Map<Integer, TodoEntity> repository = new HashMap<>();
 
