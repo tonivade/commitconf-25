@@ -134,7 +134,7 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
   static Program<Context, Void> findAllTodos() {
     return Todo.<Context>findAll()
       .map(list -> list.stream().map(Object::toString).collect(joining("\n")))
-      .flatMap(Console::writeLine)
+      .andThen(Console::writeLine)
       .andThen(loop());
   }
 
@@ -147,35 +147,35 @@ sealed interface Todo<T> extends Program.Dsl<Todo.Repository, T> {
   static Program<Context, Void> createTodo() {
     return zip(promptId(), promptTitle(),
         (id, title) -> new TodoEntity(id, title, NOT_COMPLETED))
-      .flatMap(Todo::create)
+      .andThen(Todo::create)
       .andThen(writeLine("todo created"))
       .andThen(loop());
   }
 
   static Program<Context, Void> deleteTodo() {
     return promptId()
-      .flatMap(Todo::deleteOne)
+      .andThen(Todo::deleteOne)
       .andThen(writeLine("todo removed"))
       .andThen(loop());
   }
 
   static Program<Context, Void> findTodo() {
     return promptId()
-      .flatMap(Todo::findOne)
+      .andThen(Todo::findOne)
       .map(optional -> optional.map(Object::toString).orElse("not found"))
-      .flatMap(Console::writeLine)
+      .andThen(Console::writeLine)
       .andThen(loop());
   }
 
   static Program<Context, Void> markCompleted() {
     return promptId()
-      .flatMap(id -> update(id, entity -> entity.withState(COMPLETED)))
+      .andThen(id -> update(id, entity -> entity.withState(COMPLETED)))
       .andThen(writeLine("todo completed"))
       .andThen(loop());
   }
 
   static Program<Context, Void> loop() {
-    return printMenu().flatMap(Todo::executeAction);
+    return printMenu().andThen(Todo::executeAction);
   }
 
   static void main() {

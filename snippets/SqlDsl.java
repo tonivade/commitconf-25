@@ -19,14 +19,11 @@ interface SqlDsl {
     }
   }
 
-  record Value<T>(T value) implements Field<T> {
-  }
+  record Value<T>(T value) implements Field<T> {}
 
-  record TableField<T>(String table, String name) implements Field<T> {
-  }
+  record TableField<T>(String table, String name) implements Field<T> {}
 
-  record Alias<T>(Field<T> field, String name) implements Field<T> {
-  }
+  record Alias<T>(Field<T> field, String name) implements Field<T> {}
 
   sealed interface Filter<T> {
     default String toSql() {
@@ -38,14 +35,11 @@ interface SqlDsl {
     }
   }
 
-  record Equal<T>(Field<T> left, Field<T> right) implements Filter<T> {
-  }
+  record Equal<T>(Field<T> left, Field<T> right) implements Filter<T> {}
 
-  record GreaterThan<T>(Field<T> left, Field<T> right) implements Filter<T> {
-  }
+  record GreaterThan<T>(Field<T> left, Field<T> right) implements Filter<T> {}
 
-  record LessThan<T>(Field<T> left, Field<T> right) implements Filter<T> {
-  }
+  record LessThan<T>(Field<T> left, Field<T> right) implements Filter<T> {}
 
   enum Order {
     ASC, DESC

@@ -35,7 +35,7 @@ sealed interface Game<T> extends Program.Dsl<Game.State, T> {
   }
 
   static Program<Context, Void> randomNumber() {
-    return Random.<Context>nextInt(10).flatMap(Game::setValue);
+    return Random.<Context>nextInt(10).andThen(Game::setValue);
   }
 
   static Program<Context, Boolean> checkNumber(int number) {
@@ -45,8 +45,8 @@ sealed interface Game<T> extends Program.Dsl<Game.State, T> {
   static Program<Context, Void> play() {
     return Console.<Context>prompt("Enter a number between 0 and 9")
       .map(Integer::parseInt)
-      .flatMap(Game::checkNumber)
-      .flatMap(result -> {
+      .andThen(Game::checkNumber)
+      .andThen(result -> {
         if (result) {
           return writeLine("YOU WIN!!");
         }
@@ -56,7 +56,7 @@ sealed interface Game<T> extends Program.Dsl<Game.State, T> {
 
   static void main() {
     var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
-        .flatMap(answer -> {
+        .andThen(answer -> {
           if (answer.equalsIgnoreCase("y")) {
             return randomNumber().andThen(play());
           }

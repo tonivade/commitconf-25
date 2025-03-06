@@ -39,7 +39,7 @@ sealed interface Console<T> extends Program.Dsl<Void, T> {
   }
 
   static void main() {
-    var program = prompt("What's your name?").flatMap(Console::sayHello);
+    var program = prompt("What's your name?").andThen(Console::sayHello);
 
     program.eval(null);
   }
