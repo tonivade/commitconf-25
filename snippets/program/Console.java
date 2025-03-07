@@ -1,8 +1,16 @@
 package program;
 
-import static java.lang.System.console;
+sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
+  
+  interface Service {
+    default void writeLine(String line) {
+      System.console().println(line);
+    }
 
-sealed interface Console<T> extends Program.Dsl<Void, T> {
+    default String readLine() {
+      return System.console().readLine();
+    }
+  }
 
   record WriteLine(String line) implements Console<Void> {}
   record ReadLine() implements Console<String> {}
@@ -28,13 +36,13 @@ sealed interface Console<T> extends Program.Dsl<Void, T> {
 
   @Override
   @SuppressWarnings("unchecked")
-  default T handle(Void service) {
+  default T handle(Service service) {
     return (T) switch (this) {
       case WriteLine(var line) -> {
-        console().println(line);
+        service.writeLine(line);
         yield null;
       }
-      case ReadLine _ -> console().readLine();
+      case ReadLine _ -> service.readLine();
     };
   }
 

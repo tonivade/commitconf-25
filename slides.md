@@ -1007,12 +1007,11 @@ sealed interface GameDsl {
 
 # Un DSL más divertido (II)
 
-```java {4-5}
+```java {4}
 sealed interface GameDsl {
   record WriteLine(String line) implements GameDsl {}
   record ReadLine() implements GameDsl {}
-  record RandomNumber() implements GameDsl {}
-  record CheckNumber(int number) implements GameDsl {}
+  record NextInt(int bound) implements GameDsl {}
 }
 ```
 
@@ -1020,12 +1019,27 @@ sealed interface GameDsl {
 
 # Un DSL más divertido (II)
 
-```java {6}
+```java {5-6}
 sealed interface GameDsl {
   record WriteLine(String line) implements GameDsl {}
   record ReadLine() implements GameDsl {}
-  record RandomNumber() implements GameDsl {}
-  record CheckNumber(int number) implements GameDsl {}
+  record NextInt(int bound) implements GameDsl {}
+  record GetValue() implements GameDsl {}
+  record SetValue(int value) implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {7}
+sealed interface GameDsl {
+  record WriteLine(String line) implements GameDsl {}
+  record ReadLine() implements GameDsl {}
+  record NextInt(int bound) implements GameDsl {}
+  record GetValue() implements GameDsl {}
+  record SetValue(int value) implements GameDsl {}
   record AndThen() implements GameDsl {}
 }
 ```
@@ -1034,12 +1048,13 @@ sealed interface GameDsl {
 
 # Un DSL más divertido (II)
 
-```java {6}
+```java {7}
 sealed interface GameDsl {
   record WriteLine(String line) implements GameDsl {}
   record ReadLine() implements GameDsl {}
-  record RandomNumber() implements GameDsl {}
-  record CheckNumber(int number) implements GameDsl {}
+  record NextInt(int bound) implements GameDsl {}
+  record GetValue() implements GameDsl {}
+  record SetValue(int value) implements GameDsl {}
   record AndThen(???) implements GameDsl {}
 }
 ```
@@ -1048,30 +1063,15 @@ sealed interface GameDsl {
 
 # Un DSL más divertido (II)
 
-```java {7}
+```java {8}
 sealed interface GameDsl {
   record WriteLine(String line) implements GameDsl {}
   record ReadLine() implements GameDsl {}
-  record RandomNumber() implements GameDsl {}
-  record CheckNumber(int number) implements GameDsl {}
+  record NextInt(int bound) implements GameDsl {}
+  record GetValue() implements GameDsl {}
+  record SetValue(int value) implements GameDsl {}
   record AndThen(
     GameDsl current) 
-      implements GameDsl {}
-}
-```
-
----
-
-# Un DSL más divertido (II)
-
-```java {7}
-sealed interface GameDsl {
-  record WriteLine(String line) implements GameDsl {}
-  record ReadLine() implements GameDsl {}
-  record RandomNumber() implements GameDsl {}
-  record CheckNumber(int number) implements GameDsl {}
-  record AndThen(
-    GameDsl current, ???) 
       implements GameDsl {}
 }
 ```
@@ -1084,8 +1084,26 @@ sealed interface GameDsl {
 sealed interface GameDsl {
   record WriteLine(String line) implements GameDsl {}
   record ReadLine() implements GameDsl {}
-  record RandomNumber() implements GameDsl {}
-  record CheckNumber(int number) implements GameDsl {}
+  record NextInt(int bound) implements GameDsl {}
+  record GetValue() implements GameDsl {}
+  record SetValue(int value) implements GameDsl {}
+  record AndThen(
+    GameDsl current, ???) 
+      implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {9}
+sealed interface GameDsl {
+  record WriteLine(String line) implements GameDsl {}
+  record ReadLine() implements GameDsl {}
+  record NextInt(int bound) implements GameDsl {}
+  record GetValue() implements GameDsl {}
+  record SetValue(int value) implements GameDsl {}
   record AndThen(
     GameDsl current, 
     Function<?, GameDsl> next) 
@@ -1101,8 +1119,9 @@ sealed interface GameDsl {
 sealed interface GameDsl<T> {
   record WriteLine(String line) implements GameDsl {}
   record ReadLine() implements GameDsl {}
-  record RandomNumber() implements GameDsl {}
-  record CheckNumber(int number) implements GameDsl {}
+  record NextInt(int bound) implements GameDsl {}
+  record GetValue() implements GameDsl {}
+  record SetValue(int value) implements GameDsl {}
   record AndThen(
     GameDsl current, 
     Function<?, GameDsl> next) 
@@ -1118,8 +1137,9 @@ sealed interface GameDsl<T> {
 sealed interface GameDsl<T> {
   record WriteLine(String line) implements GameDsl<Void> {}
   record ReadLine() implements GameDsl {}
-  record RandomNumber() implements GameDsl {}
-  record CheckNumber(int number) implements GameDsl {}
+  record NextInt(int bound) implements GameDsl {}
+  record GetValue() implements GameDsl {}
+  record SetValue(int value) implements GameDsl {}
   record AndThen(
     GameDsl current, 
     Function<?, GameDsl> next) 
@@ -1135,8 +1155,9 @@ sealed interface GameDsl<T> {
 sealed interface GameDsl<T> {
   record WriteLine(String line) implements GameDsl<Void> {}
   record ReadLine() implements GameDsl<String> {}
-  record RandomNumber() implements GameDsl {}
-  record CheckNumber(int number) implements GameDsl {}
+  record NextInt(int bound) implements GameDsl {}
+  record GetValue() implements GameDsl {}
+  record SetValue(int value) implements GameDsl {}
   record AndThen(
     GameDsl current, 
     Function<?, GameDsl> next) 
@@ -1152,8 +1173,9 @@ sealed interface GameDsl<T> {
 sealed interface GameDsl<T> {
   record WriteLine(String line) implements GameDsl<Void> {}
   record ReadLine() implements GameDsl<String> {}
-  record RandomNumber() implements GameDsl<Void> {}
-  record CheckNumber(int number) implements GameDsl {}
+  record NextInt(int bound) implements GameDsl<Integer> {}
+  record GetValue() implements GameDsl {}
+  record SetValue(int value) implements GameDsl {}
   record AndThen(
     GameDsl current, 
     Function<?, GameDsl> next) 
@@ -1165,12 +1187,13 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (II)
 
-```java {5}
+```java {5-6}
 sealed interface GameDsl<T> {
   record WriteLine(String line) implements GameDsl<Void> {}
   record ReadLine() implements GameDsl<String> {}
-  record RandomNumber() implements GameDsl<Void> {}
-  record CheckNumber(int number) implements GameDsl<Boolean> {}
+  record NextInt(int bound) implements GameDsl<Integer> {}
+  record GetValue() implements GameDsl<Integer> {}
+  record SetValue(int value) implements GameDsl<Void> {}
   record AndThen(
     GameDsl current, 
     Function<?, GameDsl> next) 
@@ -1182,31 +1205,15 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (II)
 
-```java {6,9}
+```java {7,10}
 sealed interface GameDsl<T> {
   record WriteLine(String line) implements GameDsl<Void> {}
   record ReadLine() implements GameDsl<String> {}
-  record RandomNumber() implements GameDsl<Void> {}
-  record CheckNumber(int number) implements GameDsl<Boolean> {}
+  record NextInt(int bound) implements GameDsl<Integer> {}
+  record GetValue() implements GameDsl<Integer> {}
+  record SetValue(int value) implements GameDsl<Void> {}
   record AndThen<T>(
     GameDsl current, 
-    Function<?, GameDsl> next) 
-      implements GameDsl<T> {}
-}
-```
-
----
-
-# Un DSL más divertido (II)
-
-```java {7}
-sealed interface GameDsl<T> {
-  record WriteLine(String line) implements GameDsl<Void> {}
-  record ReadLine() implements GameDsl<String> {}
-  record RandomNumber() implements GameDsl<Void> {}
-  record CheckNumber(int number) implements GameDsl<Boolean> {}
-  record AndThen<T>(
-    GameDsl<T> current, 
     Function<?, GameDsl> next) 
       implements GameDsl<T> {}
 }
@@ -1220,8 +1227,27 @@ sealed interface GameDsl<T> {
 sealed interface GameDsl<T> {
   record WriteLine(String line) implements GameDsl<Void> {}
   record ReadLine() implements GameDsl<String> {}
-  record RandomNumber() implements GameDsl<Void> {}
-  record CheckNumber(int number) implements GameDsl<Boolean> {}
+  record NextInt(int bound) implements GameDsl<Integer> {}
+  record GetValue() implements GameDsl<Integer> {}
+  record SetValue(int value) implements GameDsl<Void> {}
+  record AndThen<T>(
+    GameDsl<T> current, 
+    Function<?, GameDsl> next) 
+      implements GameDsl<T> {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {10}
+sealed interface GameDsl<T> {
+  record WriteLine(String line) implements GameDsl<Void> {}
+  record ReadLine() implements GameDsl<String> {}
+  record NextInt(int bound) implements GameDsl<Integer> {}
+  record GetValue() implements GameDsl<Integer> {}
+  record SetValue(int value) implements GameDsl<Void> {}
   record AndThen<T>(
     GameDsl<T> current, 
     Function<T, GameDsl<?>> next) 
@@ -1233,12 +1259,13 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (II)
 
-```java {6-9}
+```java {8-10}
 sealed interface GameDsl<T> {
   record WriteLine(String line) implements GameDsl<Void> {}
   record ReadLine() implements GameDsl<String> {}
-  record RandomNumber() implements GameDsl<Void> {}
-  record CheckNumber(int number) implements GameDsl<Boolean> {}
+  record NextInt(int bound) implements GameDsl<Integer> {}
+  record GetValue() implements GameDsl<Integer> {}
+  record SetValue(int value) implements GameDsl<Void> {}
   record AndThen<X, T>(
     GameDsl<X> current, 
     Function<X, GameDsl<T>> next) 
@@ -1286,7 +1313,7 @@ sealed interface GameDsl<T> {
     prompt("Do you want to play a game? (y/n)")
       .andThen(answer -> {
         if (answer.equalsIgnoreCase("y")) {
-          return new RandomNumber();
+          return new NextInt(10);
         }
         return new WriteLine("Bye!");
       });
@@ -1304,7 +1331,25 @@ sealed interface GameDsl<T> {
     prompt("Do you want to play a game? (y/n)")
       .andThen(answer -> {
         if (answer.equalsIgnoreCase("y")) {
-          return new RandomNumber().andThen(_ -> play());
+          return new NextInt(10).andThen(SetValue::new);
+        }
+        return new WriteLine("Bye!");
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {6}
+sealed interface GameDsl<T> {
+  static void main() {
+    prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return new NextInt(10).andThen(SetValue::new).andThen(_ -> play());
         }
         return new WriteLine("Bye!");
       });
@@ -1333,7 +1378,22 @@ sealed interface GameDsl<T> {
   static GameDsl<Void> play() {
     return prompt("Enter a number between 0 to 9")
       .andThen(number -> {
-        return new CheckNumber(number);
+        return new GetValue();
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {4-6}
+sealed interface GameDsl<T> {
+  static GameDsl<Void> play() {
+    return prompt("Enter a number between 0 to 9")
+      .andThen(number -> {
+        return new GetValue().map(value -> value == number);
       });
   }
 }
@@ -1348,7 +1408,7 @@ sealed interface GameDsl<T> {
   static GameDsl<Void> play() {
     return prompt("Enter a number between 0 to 9")
       .andThen(number -> {
-        return new CheckNumber(Integer.parseInt(number));
+        return new GetValue().map(value -> value == Integer.parseInt(number));
       });
   }
 }
@@ -1362,7 +1422,7 @@ sealed interface GameDsl<T> {
 sealed interface GameDsl<T> {
   static GameDsl<Void> play() {
     return prompt("Enter a number between 0 to 9")
-      .andThen(number -> new CheckNumber(Integer.parseInt(number)))
+      .andThen(number -> new GetValue().map(value -> value == Integer.parseInt(number)))
       .andThen(result -> {
         if (result) {
           return new WriteLine("YOU WIN!");
@@ -1381,7 +1441,7 @@ sealed interface GameDsl<T> {
 sealed interface GameDsl<T> {
   static GameDsl<Void> play() {
     return prompt("Enter a number between 0 to 9")
-      .andThen(number -> new CheckNumber(Integer.parseInt(number)))
+      .andThen(number -> new GetValue().map(value -> value == Integer.parseInt(number)))
       .andThen(result -> {
         if (result) {
           return new WriteLine("YOU WIN!");

@@ -8,8 +8,10 @@ sealed interface GameDsl<T> {
   record WriteLine(String line) implements GameDsl<Void> {}
   record ReadLine() implements GameDsl<String> {}
 
-  record RandomNumber() implements GameDsl<Void> {}
-  record CheckNumber(int number) implements GameDsl<Boolean> {}
+  record NextInt(int bound) implements GameDsl<Integer> {}
+
+  record GetValue() implements GameDsl<Integer> {}
+  record SetValue(int value) implements GameDsl<Void> {}
 
   record Done<T>(T value) implements GameDsl<T> {}
   record AndThen<T, R>(GameDsl<T> current, Function<T, GameDsl<R>> next) implements GameDsl<R> {
@@ -26,12 +28,24 @@ sealed interface GameDsl<T> {
     return new ReadLine();
   }
 
+  static GameDsl<Integer> nextInt(int bound) {
+    return new NextInt(bound);
+  }
+
+  static GameDsl<Void> setValue(int value) {
+    return new SetValue(value);
+  }
+
+  static GameDsl<Integer> getValue() {
+    return new GetValue();
+  }
+
   static GameDsl<Void> randomNumber() {
-    return new RandomNumber();
+    return nextInt(10).andThen(GameDsl::setValue);
   }
 
   static GameDsl<Boolean> checkNumber(int number) {
-    return new CheckNumber(number);
+    return getValue().map(value -> value == number);
   }
 
   static <T> GameDsl<T> done(T value) {
@@ -58,11 +72,12 @@ sealed interface GameDsl<T> {
         yield null;
       }
       case ReadLine _ -> console().readLine();
-      case RandomNumber _ -> {
-        context.set(ThreadLocalRandom.current().nextInt(10));
+      case NextInt(int bound) -> ThreadLocalRandom.current().nextInt(bound);
+      case GetValue _ -> context.get();
+      case SetValue(var value) -> {
+        context.set(value);
         yield null;
       }
-      case CheckNumber(var number) -> context.get() == number;
       case Done<T>(var value) -> value;
       case AndThen<?, T> andThen -> andThen.safeEval(context);
     };
