@@ -2,7 +2,7 @@ package program;
 
 import static program.Console.writeLine;
 
-interface Game {
+class Game {
 
   static Program<Context, Void> randomNumber() {
     return Random.<Context>nextInt(10).andThen(State::setValue);
@@ -36,7 +36,7 @@ interface Game {
     program.eval(new Context());
   }
 
-  final class Context implements State.Service, Random.Service, Console.Service {
+  static final class Context implements State.Service, Random.Service, Console.Service {
 
     private int value;
 

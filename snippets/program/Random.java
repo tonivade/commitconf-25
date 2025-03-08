@@ -13,8 +13,8 @@ sealed interface Random<T> extends Program.Dsl<Random.Service, T> {
   record NextInt(int bound) implements Random<Integer> {}
 
   @SuppressWarnings("unchecked")
-  static <S> Program<S, Integer> nextInt(int bounds) {
-    return (Program<S, Integer>) new NextInt(bounds);
+  static <S> Program<S, Integer> nextInt(int bound) {
+    return (Program<S, Integer>) new NextInt(bound);
   }
 
   @Override
