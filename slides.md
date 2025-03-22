@@ -137,19 +137,81 @@ order by people.age ASC
 
 # Records
 
+* Introducido en Java 16.
+* Inmutables.
+* Constructor canónico.
+
 ---
 
-# Pattern Matching
+# Records (II)
+
+```java
+public record Movie(String title, int year, int duration) {
+}
+```
+
+* `equals()`
+* `hashcode()`
+* `toString()`
 
 ---
 
 # Sealed interfaces
 
+* Introducido en Java 17.
+* Jerarquías de clases cerradas.
+* `non-sealed`
+
+---
+
+# Sealed interfaces (II)
+
+```java
+public sealed interface Shape {
+  record Square(int side) implements Shape {}
+  record Rectangle(int weight, int height) implements Shape {}
+  record Circle(int radius) implements Shape {}
+}
+```
+
+---
+
+# Sealed interfaces (II)
+
+```java {5}
+public sealed interface Shape {
+  record Square(int side) implements Shape {}
+  record Rectangle(int weight, int height) implements Shape {}
+  record Circle(int radius) implements Shape {}
+  non-sealed interface CustomShape extends Shape {}
+}
+```
+
+---
+
+# Pattern Matching for Switch
+
+* Introducido en Java 21.
+* Deconstructores, nos permiten acceder a los componentes internos.
+* Exhaustiveness.
+
+---
+
+# Pattern Matching for Switch (II)
+
+```java
+var area = switch (this) {
+    case Square(var side) -> side * side;
+    case Rectangle(var weight, var height) -> weight * height;
+    case Circle(var radius) -> Math.PI * Math.pow(radius, 2);
+};
+```
+
 ---
 
 # Más información
 
-* Mi [charla del año pasado](https://www.youtube.com/watch?v=RbLkJXagQXw).
+Mi [charla del año pasado](https://www.youtube.com/watch?v=RbLkJXagQXw).
 
 ---
 
@@ -177,10 +239,12 @@ order by people.age ASC
 
 ---
 
-# Un DSL mas dinámico
+# Un DSL más dinámico
 
-* Console
-* Combinar operaciones
+* Que permita:
+  * escribir en pantalla.
+  * leer de consola.
+* Combinar estas operaciones para hacer programas.
 
 ---
 
@@ -221,12 +285,17 @@ Toni
 # Un programa muy sencillo (II)
 
 ```java
-sealed interface Console {
-  static void main() {
+static void main() {
+}
+```
 
+---
 
+# Un programa muy sencillo (II)
 
-  }
+```java {2}
+static void main() {
+  System.console().println("What's your name?");
 }
 ```
 
@@ -235,12 +304,9 @@ sealed interface Console {
 # Un programa muy sencillo (II)
 
 ```java {3}
-sealed interface Console {
-  static void main() {
-    System.console().println("What's your name?");
-
-
-  }
+static void main() {
+  System.console().println("What's your name?");
+  var name = System.console().readLine();
 }
 ```
 
@@ -249,26 +315,10 @@ sealed interface Console {
 # Un programa muy sencillo (II)
 
 ```java {4}
-sealed interface Console {
-  static void main() {
-    System.console().println("What's your name?");
-    var name = System.console().readLine();
-
-  }
-}
-```
-
----
-
-# Un programa muy sencillo (II)
-
-```java {5}
-sealed interface Console {
-  static void main() {
-    System.console().println("What's your name?");
-    var name = System.console().readLine();
-    System.console().println("Hello " + name + "!");
-  }
+static void main() {
+  System.console().println("What's your name?");
+  var name = System.console().readLine();
+  System.console().println("Hello " + name + "!");
 }
 ```
 
@@ -278,8 +328,6 @@ sealed interface Console {
 
 ```java
 sealed interface Console {
-
-
 }
 ```
 
@@ -290,7 +338,6 @@ sealed interface Console {
 ```java {2}
 sealed interface Console {
   record WriteLine(String line) implements Console {}
-
 }
 ```
 
@@ -525,9 +572,11 @@ sealed interface ConsoleCps {
 # Primer Intento (IV)
 
 ```java
-default String eval() {
-  return switch (this) {
-  };
+sealed interface ConsoleCps {
+  default String eval() {
+    return switch (this) {
+    };
+  }
 }
 ```
 
@@ -535,14 +584,16 @@ default String eval() {
 
 # Primer Intento (IV)
 
-```java {3-6}
-default String eval() {
-  return switch (this) {
-    case WriteLine(var line, var next) -> {
-      System.console().println(line);
-      yield next.eval();
-    }
-  };
+```java {4-7}
+sealed interface ConsoleCps {
+  default String eval() {
+    return switch (this) {
+      case WriteLine(var line, var next) -> {
+        System.console().println(line);
+        yield next.eval();
+      }
+    };
+  }
 }
 ```
 
@@ -550,14 +601,16 @@ default String eval() {
 
 # Primer Intento (IV)
 
-```java {5}
-default String eval() {
-  return switch (this) {
-    case WriteLine(var line, var next) -> {
-      System.console().println(line);
-      yield next.eval();
-    }
-  };
+```java {6}
+sealed interface ConsoleCps {
+  default String eval() {
+    return switch (this) {
+      case WriteLine(var line, var next) -> {
+        System.console().println(line);
+        yield next.eval();
+      }
+    };
+  }
 }
 ```
 
@@ -565,18 +618,20 @@ default String eval() {
 
 # Primer Intento (IV)
 
-```java {7-10}
-default String eval() {
-  return switch (this) {
-    case WriteLine(var line, var next) -> {
-      System.console().println(line);
-      yield next.eval();
-    }
-    case ReadLine(var next) -> {
-      var line = System.console().readLine();
-      yield next.apply(line).eval();
-    }
-  };
+```java {8-11}
+sealed interface ConsoleCps {
+  default String eval() {
+    return switch (this) {
+      case WriteLine(var line, var next) -> {
+        System.console().println(line);
+        yield next.eval();
+      }
+      case ReadLine(var next) -> {
+        var line = System.console().readLine();
+        yield next.apply(line).eval();
+      }
+    };
+  }
 }
 ```
 
@@ -584,18 +639,20 @@ default String eval() {
 
 # Primer Intento (IV)
 
-```java {9}
-default String eval() {
-  return switch (this) {
-    case WriteLine(var line, var next) -> {
-      System.console().println(line);
-      yield next.eval();
-    }
-    case ReadLine(var next) -> {
-      var line = System.console().readLine();
-      yield next.apply(line).eval();
-    }
-  };
+```java {10}
+sealed interface ConsoleCps {
+  default String eval() {
+    return switch (this) {
+      case WriteLine(var line, var next) -> {
+        System.console().println(line);
+        yield next.eval();
+      }
+      case ReadLine(var next) -> {
+        var line = System.console().readLine();
+        yield next.apply(line).eval();
+      }
+    };
+  }
 }
 ```
 
@@ -603,19 +660,21 @@ default String eval() {
 
 # Primer Intento (IV)
 
-```java {11}
-default String eval() {
-  return switch (this) {
-    case WriteLine(var line, var next) -> {
-      console().println(line);
-      yield next.eval();
-    }
-    case ReadLine(var next) -> {
-      var line = console().readLine();
-      yield next.apply(line).eval();
-    }
-    case End _ -> null;
-  };
+```java {12}
+sealed interface ConsoleCps {
+  default String eval() {
+    return switch (this) {
+      case WriteLine(var line, var next) -> {
+        System.console().println(line);
+        yield next.eval();
+      }
+      case ReadLine(var next) -> {
+        var line = System.console().readLine();
+        yield next.apply(line).eval();
+      }
+      case End _ -> null;
+    };
+  }
 }
 ```
 
@@ -633,8 +692,6 @@ Usando un estilo monádico.
 
 ```java
 sealed interface ConsoleDsl {
-
-
 }
 ```
 
@@ -811,7 +868,7 @@ sealed interface ConsoleDsl {
 ```java
 sealed interface ConsoleDsl {
   static ConsoleDsl prompt(String question) {
-    return new WriteLine(question).andThen(new ReadLine());
+    return new WriteLine(question).andThen(_ -> new ReadLine());
   }
 }
 ```
@@ -1435,12 +1492,13 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (III)
 
-```java {4-6}
+```java {6}
 sealed interface GameDsl<T> {
   static GameDsl<Void> play() {
     return prompt("Enter a number between 0 to 9")
       .andThen(number -> {
-        return new GetValue().map(value -> value == number);
+        return new GetValue()
+          .flatMap(value -> value == number);
       });
   }
 }
@@ -1450,12 +1508,13 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (III)
 
-```java {5}
+```java {6}
 sealed interface GameDsl<T> {
   static GameDsl<Void> play() {
     return prompt("Enter a number between 0 to 9")
       .andThen(number -> {
-        return new GetValue().map(value -> value == Integer.parseInt(number));
+        return new GetValue()
+          .flatMap(value -> value == Integer.parseInt(number));
       });
   }
 }
@@ -1465,13 +1524,13 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (III)
 
-```java {4}
+```java {6}
 sealed interface GameDsl<T> {
   static GameDsl<Void> play() {
     return prompt("Enter a number between 0 to 9")
-      .map(Integer::parseInt)
       .andThen(number -> {
-        return new GetValue().map(value -> value == number);
+        return new GetValue()
+          .flatMap(value -> new Done(value == Integer.parseInt(number)));
       });
   }
 }
@@ -1497,6 +1556,38 @@ sealed interface GameDsl<T> {
 
   default <R> GameDsl<R> map(Function<T, R> mapper) {
     return andThen(mapper.andThen(Done::new));
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {6}
+sealed interface GameDsl<T> {
+  static GameDsl<Void> play() {
+    return prompt("Enter a number between 0 to 9")
+      .andThen(number -> {
+        return new GetValue()
+          .map(value -> value == Integer.parseInt(number));
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {4,6}
+sealed interface GameDsl<T> {
+  static GameDsl<Void> play() {
+    return prompt("Enter a number between 0 to 9")
+      .map(Integer::parseInt)
+      .andThen(number -> {
+        return new GetValue().map(value -> value == number);
+      });
   }
 }
 ```
@@ -1551,7 +1642,7 @@ sealed interface GameDsl<T> {
     var program = prompt("Do you want to play a game? (y/n)")
       .andThen(answer -> {
         if (answer.equalsIgnoreCase("y")) {
-          return new RandomNumber().andThen(_ -> play());
+          return new NextInt(10).andThen(SetValue::new).andThen(_ -> play());
         }
         return new WriteLine("Bye!");
       });
