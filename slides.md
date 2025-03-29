@@ -130,8 +130,8 @@ order by people.age ASC
   * Records.
   * Pattern matching.
   * Sealed interfaces.
-* DSLs internos estáticos implementados en Java. Brevemente.
-* DSLs internos dinámicos implementados en Java. Mas extensamente.
+* DSLs internos estáticos implementados en Java. Muy brevemente.
+* DSLs internos dinámicos implementados en Java. Más extensamente.
 
 ---
 
@@ -217,25 +217,299 @@ Mi [charla del año pasado](https://www.youtube.com/watch?v=RbLkJXagQXw).
 
 # Un DSL sencillo
 
-* ResumeDSL
+* Para generar queries SQL.
 
 ---
 
-# Patrón builder
+# Un DSL sencillo
 
-* Fluent API.
-* Son aburridos de implementar.
-* Librerías:
-  * Lombok.
-  * RecordBuilder.
-  * Immutables.
+```java
+sealed interface SqlDsl {
+  interface Table {
+    String name();
+  }
+}
+```
 
---- 
+---
 
-# Smart constructors
+# Un DSL sencillo
 
-* Los news son aburridos.
-* Permiten ser más concisos.
+```java
+sealed interface SqlDsl {
+  sealed interface Field<T> {}
+  record Value<T>(T value) implements Field<T> {}
+  record TableField<T>(String table, String name) implements Field<T> {}
+}
+```
+
+---
+
+# Un DSL sencillo
+
+```java
+sealed interface SqlDsl {
+  sealed interface Filter<T> {}
+  record Equal<T>(Field<T> left, Field<T> right) implements Filter<T> {}
+  record GreaterThan<T>(Field<T> left, Field<T> right) implements Filter<T> {}
+  record LessThan<T>(Field<T> left, Field<T> right) implements Filter<T> {}
+}
+```
+
+---
+
+# Un DSL sencillo
+
+```java
+sealed interface SqlDsl {
+  sealed interface Sorting<T> {}
+  record Ascending<T>(Field<T> field) implements Sorting<T> {}
+  record Descending<T>(Field<T> field) implements Sorting<T> {}
+}
+```
+
+---
+
+# Un DSL sencillo
+
+```java
+sealed interface SqlDsl {
+  record Query(
+      List<Field<?>> fields,
+      Table table,
+      List<Filter<?>> filters,
+      List<Sorting<?>> sorting) {
+  }
+}
+```
+
+---
+
+# Un DSL sencillo
+
+```java
+sealed interface SqlDsl {
+  record Query(
+      List<Field<?>> fields,
+      Table table,
+      List<Filter<?>> filters,
+      List<Sorting<?>> sorting) {
+
+    Query from(Table table) {
+      return new Query(fields, table, filters, sorting);
+    }
+  }
+}
+```
+
+---
+
+# Un DSL sencillo
+
+```java
+sealed interface SqlDsl {
+  record Query(
+      List<Field<?>> fields,
+      Table table,
+      List<Filter<?>> filters,
+      List<Sorting<?>> sorting) {
+
+    Query where(Filter<?>... filters) {
+      return new Query(fields, table, List.of(filters), sorting);
+    }
+  }
+}
+```
+
+---
+
+# Un DSL sencillo
+
+```java
+sealed interface SqlDsl {
+  record Query(
+      List<Field<?>> fields,
+      Table table,
+      List<Filter<?>> filters,
+      List<Sorting<?>> sorting) {
+
+    Query sorting(Sorting<?>... sorting) {
+      return new Query(fields, table, filters, List.of(sorting));
+    }
+  }
+}
+```
+
+---
+
+# Un DSL sencillo
+
+```java
+sealed interface SqlDsl {
+  static Query select(Field<?>... fields) {
+    return new Query(List.of(fields), null, null, null);
+  }
+}
+```
+
+---
+
+# Un DSL sencillo
+
+```java
+sealed interface SqlDsl {
+  static <T> Field<T> field(String table, String name) {
+    return new TableField<>(table, name);
+  }
+  static <T> Field<T> value(T value) {
+    return new Value<>(value);
+  }
+}
+```
+
+---
+
+# Un DSL sencillo
+
+```java
+sealed interface SqlDsl {
+  static <T> Filter<T> eq(Field<T> field, T value) {
+    return new Equal<>(field, value(value));
+  }
+  static <T> Filter<T> gt(Field<T> field, T value) {
+    return new GreaterThan<>(field, value(value));
+  }
+  static <T> Filter<T> lt(Field<T> field, T value) {
+    return new LessThan<>(field, value(value));
+  }
+}
+```
+
+---
+
+# Un DSL sencillo
+
+```java
+sealed interface SqlDsl {
+  static <T> Sorting<T> asc(Field<T> field) {
+    return new Ascending<>(field);
+  }
+  static <T> Sorting<T> desc(Field<T> field) {
+    return new Descending<>(field);
+  }
+}
+```
+
+---
+
+# Un DSL sencillo
+
+```java
+sealed interface SqlDsl {
+  final class People implements Table {
+
+    final Field<String> NAME = field("people", "name");
+    final Field<Integer> AGE = field("people", "age");
+
+    public String name() {
+      return "people";
+    }
+  }
+}
+```
+
+---
+
+# Un DSL sencillo
+
+```java
+sealed interface SqlDsl {
+  static void main(String... args) {
+    var PEOPLE = new People();
+
+    var query = select(PEOPLE.NAME, PEOPLE.AGE)
+        .from(PEOPLE)
+        .where(gt(PEOPLE.AGE, 18))
+        .sorting(asc(PEOPLE.AGE));
+
+    System.console().println(query.toSql());
+  }
+}
+```
+
+---
+
+# Un DSL sencillo (II)
+
+```java
+sealed interface SqlDsl {
+  record Query(...) {
+    String toSql() {
+      // ... a lot of boring code
+    }
+  }
+}
+```
+
+---
+
+# Un DSL sencillo (II)
+
+```java
+sealed interface SqlDsl {
+  sealed interface Field<T> {
+    default String toSql() {
+      return switch (this) {
+        case Value(var value) -> String.valueOf(value);
+        case TableField(var table, var name) -> table + "." + name;
+      };
+    }
+  }
+}
+```
+
+---
+
+# Un DSL sencillo (II)
+
+```java
+sealed interface SqlDsl {
+  sealed interface Filter<T> {
+    default String toSql() {
+      return switch (this) {
+        case Equal(var left, var right) -> left.toSql() + " = " + right.toSql();
+        case GreaterThan(var left, var right) -> left.toSql() + " > " + right.toSql();
+        case LessThan(var left, var right) -> left.toSql() + " < " + right.toSql();
+      };
+    }
+  }
+}
+```
+
+---
+
+# Un DSL sencillo (II)
+
+```java
+sealed interface SqlDsl {
+  sealed interface Sorting<T> {
+    default String toSql() {
+      return switch (this) {
+        case Ascending(var field) -> field.toSql() + " asc";
+        case Descending(var field) -> field.toSql() + " desc";
+      };
+    }
+  }
+}
+```
+
+---
+
+# Un DSL sencillo (II)
+
+```sql
+select people.name, people.age from people where people.age > 18 order by people.age asc
+```
 
 ---
 
@@ -688,7 +962,7 @@ sealed interface ConsoleCps {
 
 # Otro Intento
 
-Usando un estilo monádico.
+Usando otro estilo.
 
 ```java
 sealed interface ConsoleDsl {
@@ -699,7 +973,7 @@ sealed interface ConsoleDsl {
 
 # Otro Intento
 
-Usando un estilo monádico.
+Usando otro estilo.
 
 ```java
 sealed interface ConsoleDsl {
@@ -712,7 +986,7 @@ sealed interface ConsoleDsl {
 
 # Otro Intento
 
-Usando un estilo monádico.
+Usando otro estilo.
 
 ```java {4}
 sealed interface ConsoleDsl {
@@ -726,7 +1000,7 @@ sealed interface ConsoleDsl {
 
 # Otro Intento
 
-Usando un estilo monádico.
+Usando otro estilo.
 
 ```java {4}
 sealed interface ConsoleDsl {
@@ -740,7 +1014,7 @@ sealed interface ConsoleDsl {
 
 # Otro Intento
 
-Usando un estilo monádico.
+Usando otro estilo.
 
 ```java {5}
 sealed interface ConsoleDsl {
@@ -756,7 +1030,7 @@ sealed interface ConsoleDsl {
 
 # Otro Intento
 
-Usando un estilo monádico.
+Usando otro estilo.
 
 ```java {6}
 sealed interface ConsoleDsl {
@@ -1401,6 +1675,24 @@ sealed interface GameDsl<T> {
         if (answer.equalsIgnoreCase("y")) {
           return ???;
         }
+        return ???;
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {8}
+sealed interface GameDsl<T> {
+  static void main() {
+    prompt("Do you want to play a game? (y/n)")
+      .andThen(answer -> {
+        if (answer.equalsIgnoreCase("y")) {
+          return ???;
+        }
         return new WriteLine("Bye!");
       });
   }
@@ -1498,7 +1790,7 @@ sealed interface GameDsl<T> {
     return prompt("Enter a number between 0 to 9")
       .andThen(number -> {
         return new GetValue()
-          .flatMap(value -> value == number);
+          .andThen(value -> value == number);
       });
   }
 }
@@ -1514,7 +1806,7 @@ sealed interface GameDsl<T> {
     return prompt("Enter a number between 0 to 9")
       .andThen(number -> {
         return new GetValue()
-          .flatMap(value -> value == Integer.parseInt(number));
+          .andThen(value -> value == Integer.parseInt(number));
       });
   }
 }
@@ -1530,7 +1822,7 @@ sealed interface GameDsl<T> {
     return prompt("Enter a number between 0 to 9")
       .andThen(number -> {
         return new GetValue()
-          .flatMap(value -> new Done(value == Integer.parseInt(number)));
+          .andThen(value -> new Done(value == Integer.parseInt(number)));
       });
   }
 }
@@ -1604,6 +1896,26 @@ sealed interface GameDsl<T> {
       .andThen(number -> new GetValue().map(value -> value == number))
       .andThen(result -> {
         if (result) {
+          return ???;
+        }
+        return ???;
+      });
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (III)
+
+```java {8}
+sealed interface GameDsl<T> {
+  static GameDsl<Void> play() {
+    return prompt("Enter a number between 0 to 9")
+      .map(Integer::parseInt)
+      .andThen(number -> new GetValue().map(value -> value == number))
+      .andThen(result -> {
+        if (result) {
           return new WriteLine("YOU WIN!");
         }
         return ???;
@@ -1648,6 +1960,32 @@ sealed interface GameDsl<T> {
       });
 
     program.eval();
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {2}
+sealed interface GameDsl<T> {
+  default ? eval() {
+    return switch (this) {
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {2}
+sealed interface GameDsl<T> {
+  default T eval() {
+    return switch (this) {
+    };
   }
 }
 ```
@@ -1712,7 +2050,53 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (IV)
 
-```java {2,10-13}
+```java {10-13}
+sealed interface GameDsl<T> {
+  default T eval() {
+    return switch (this) {
+      case WriteLine(var line) -> {
+        System.console().println(line);
+        yield null;
+      }
+      case ReadLine _ -> System.console().readLine();
+      case NextInt(var bound) -> ThreadLocalRandom.current().nextInt(bound);
+      case SetValue(var value) -> {
+        context.set(value);
+        yield null;
+      }
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {11}
+sealed interface GameDsl<T> {
+  default T eval() {
+    return switch (this) {
+      case WriteLine(var line) -> {
+        System.console().println(line);
+        yield null;
+      }
+      case ReadLine _ -> System.console().readLine();
+      case NextInt(var bound) -> ThreadLocalRandom.current().nextInt(bound);
+      case SetValue(var value) -> {
+        context.set(value);
+        yield null;
+      }
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {2}
 sealed interface GameDsl<T> {
   default T eval(Context context) {
     return switch (this) {
@@ -1872,12 +2256,49 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (IV)
 
+```java {2,5}
+sealed interface GameDsl<T> {
+  default <X> T eval(Context context) {
+    return switch (this) {
+      // ...
+      case AndThen<X, T>(var current, var next) -> {
+        var value = current.eval(context);
+        yield next.apply(value).eval(context);
+      }
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
+```java {2,5}
+sealed interface GameDsl<T> {
+  default <X> T eval(Context context) {
+    return switch (this) {
+      // ...
+      case AndThen<X, T>(var current, var next) -> {
+        // it doesn't work 😢
+        var value = current.eval(context);
+        yield next.apply(value).eval(context);
+      }
+    };
+  }
+}
+```
+
+---
+
+# Un DSL más divertido (IV)
+
 ```java {5-7}
 sealed interface GameDsl<T> {
   record AndThen<X, T>(
       GameDsl<X> current, 
       Function<X, GameDsl<T>> next) implements GameDsl<T> {
-    public T safeEval(Context context) {
+    private T safeEval(Context context) {
       return next.apply(current.eval(context)).eval(context);
     }
   }
@@ -2149,6 +2570,19 @@ sealed interface Program<T> {
 
 # Sacar factor común (II)
 
+```java
+sealed interface Program<T> {
+  default T eval() {
+    return switch (this) {
+    };
+  }
+}
+```
+
+---
+
+# Sacar factor común (II)
+
 ```java {4}
 sealed interface Program<T> {
   default T eval() {
@@ -2235,7 +2669,7 @@ sealed interface Console<T> extends Program.Dsl<T> {
 ```java
 sealed interface Console<T> extends Program.Dsl<T> {
   static void main() {
-    var program = prompt("What's your name?").flatMap(Console::sayHello);
+    var program = prompt("What's your name?").andThen(Console::sayHello);
 
     program.eval();
   }
@@ -2776,13 +3210,13 @@ Cada mini lenguaje define:
 
 # Voy a hablar de mi libro :book:
 
-* A raíz de esto he desarrollado una librería que implementa lo que acabo de presentar aquí.
+* A raíz de esto he desarrollado una librería que implementa esto.
 * Con algunas mejoras:
   * Generación automática de código repetitivo usando procesadores de anotaciones.
   * Gestión de errores.
   * Structured Concurrency.
   * Retry and Repeat.
-* Si tenéis interés esta en mi github y se llama [diesel](https://github.com/tonivade/diesel).
+* Si tenéis interés esta en github y se llama [diesel](https://github.com/tonivade/diesel).
  
 ---
 
@@ -2802,27 +3236,3 @@ Cada mini lenguaje define:
 # ¡Gracias! :sparkling_heart:
 
 <!-- _class: lead -->
-
----
-
-# Documentación Oficial :books:
-
-
----
-
-# Artículos / Videos :video_camera:
-
-
----
-
-# Enlaces :link:
-
-
-<!-- TODO:
-
-  - records
-  - pattern matching
-  - sealed interfaces
-  - ResumeDSL
-
-    -->

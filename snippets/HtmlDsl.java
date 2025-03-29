@@ -1,4 +1,3 @@
-import static java.lang.System.console;
 import static java.util.stream.Collectors.joining;
 
 import java.util.stream.Stream;
@@ -33,6 +32,6 @@ interface HtmlDsl {
         new Head("Example"),
         new Body(new H1("Hello World!")));
 
-    console().println(page.toHtml());
+    System.console().println(page.toHtml());
   }
 }

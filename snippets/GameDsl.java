@@ -1,5 +1,3 @@
-import static java.lang.System.console;
-
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
@@ -15,7 +13,7 @@ sealed interface GameDsl<T> {
 
   record Done<T>(T value) implements GameDsl<T> {}
   record AndThen<T, R>(GameDsl<T> current, Function<T, GameDsl<R>> next) implements GameDsl<R> {
-    public R safeEval(Context context) {
+    private R safeEval(Context context) {
       return next.apply(current.eval(context)).eval(context);
     }
   }
@@ -68,10 +66,10 @@ sealed interface GameDsl<T> {
   default T eval(Context context) {
     return (T) switch (this) {
       case WriteLine(var line) -> {
-        console().println(line);
+        System.console().println(line);
         yield null;
       }
-      case ReadLine _ -> console().readLine();
+      case ReadLine _ -> System.console().readLine();
       case NextInt(int bound) -> ThreadLocalRandom.current().nextInt(bound);
       case GetValue _ -> context.get();
       case SetValue(var value) -> {

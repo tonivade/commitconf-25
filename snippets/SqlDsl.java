@@ -1,4 +1,3 @@
-import static java.lang.System.console;
 import static java.util.stream.Collectors.joining;
 
 import java.util.List;
@@ -41,22 +40,27 @@ interface SqlDsl {
 
   record LessThan<T>(Field<T> left, Field<T> right) implements Filter<T> {}
 
-  enum Order {
-    ASC, DESC
-  }
-
-  record Sorting<T>(Field<T> field, Order order) {
-    String toSql() {
-      return field.toSql() + " " + order.name();
+  sealed interface Sorting<T> {
+    default String toSql() {
+      return switch (this) {
+        case Ascending(var field) -> field.toSql() + " asc";
+        case Descending(var field) -> field.toSql() + " desc";
+      };
     }
   }
 
+  record Ascending<T>(Field<T> field) implements Sorting<T> {
+  }
+
+  record Descending<T>(Field<T> field) implements Sorting<T> {
+  }
+
   static <T> Sorting<T> asc(Field<T> field) {
-    return new Sorting<>(field, Order.ASC);
+    return new Ascending<>(field);
   }
 
   static <T> Sorting<T> desc(Field<T> field) {
-    return new Sorting<>(field, Order.DESC);
+    return new Descending<>(field);
   }
 
   record Query(
@@ -108,36 +112,41 @@ interface SqlDsl {
     return new TableField<>(table, name);
   }
 
-  static <T> Filter<T> equal(Field<T> field, T value) {
-    return new Equal<>(field, new Value<T>(value));
+  static <T> Field<T> value(T value) {
+    return new Value<>(value);
+  }
+
+  static <T> Filter<T> eq(Field<T> field, T value) {
+    return new Equal<>(field, value(value));
   }
 
   static <T> Filter<T> gt(Field<T> field, T value) {
-    return new GreaterThan<>(field, new Value<T>(value));
+    return new GreaterThan<>(field, value(value));
   }
 
   static <T> Filter<T> lt(Field<T> field, T value) {
-    return new LessThan<>(field, new Value<T>(value));
+    return new LessThan<>(field, value(value));
   }
 
   final class People implements Table {
 
+    final Field<String> NAME = field("people", "name");
+    final Field<Integer> AGE = field("people", "age");
+
     public String name() {
       return "people";
     }
-
-    Field<String> NAME = field("people", "name");
-    Field<Integer> AGE = field("people", "age");
   }
 
-  People PEOPLE = new People();
 
   static void main(String... args) {
+    People PEOPLE = new People();
+
     var query = select(PEOPLE.NAME, PEOPLE.AGE)
         .from(PEOPLE)
         .where(gt(PEOPLE.AGE, 18))
         .sorting(asc(PEOPLE.AGE));
 
-    console().println(query.toSql());
+    System.console().println(query.toSql());
   }
 }

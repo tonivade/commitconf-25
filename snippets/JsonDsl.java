@@ -1,4 +1,3 @@
-import static java.lang.System.console;
 import static java.util.Map.entry;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
@@ -71,6 +70,6 @@ sealed interface JsonDsl {
           entry("age", JsonNull.NULL), 
           entry("old", JsonBoolean.FALSE)));
 
-    console().println(json.asString());
+    System.console().println(json.asString());
   }
 }

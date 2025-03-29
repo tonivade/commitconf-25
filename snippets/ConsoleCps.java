@@ -1,5 +1,3 @@
-import static java.lang.System.console;
-
 import java.util.function.Function;
 
 /*
@@ -38,11 +36,11 @@ sealed interface ConsoleCps {
   default String eval() {
     return switch (this) {
       case WriteLine(var line, var next) -> {
-        console().println(line);
+        System.console().println(line);
         yield next.eval();
       }
       case ReadLine(var next) -> {
-        var line = console().readLine();
+        var line = System.console().readLine();
         yield next.apply(line).eval();
       }
       case End _ -> null;

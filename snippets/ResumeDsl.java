@@ -1,5 +1,3 @@
-import static java.lang.System.console;
-
 import java.util.List;
 
 interface ResumeDsl {
@@ -102,6 +100,6 @@ interface ResumeDsl {
                 new Location("Madrid", "Spain"),
                 new Period(new Date(12, 2019)))));
 
-    console().println(me);
+    System.console().println(me);
   }
 }
