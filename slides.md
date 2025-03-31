@@ -17,7 +17,7 @@ Aprovechando las nuevas herramientas del lenguaje
 
 <!-- _color: #fff -->
 <!-- _footer: _Antonio Muñoz_ -->
-<!-- _backgroundImage: url('images/frontpage.jpg') -->
+<!-- _backgroundImage: url('images/frontpage.png') -->
 
 ---
 
