@@ -49,6 +49,6 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
   static void main() {
     var program = prompt("What's your name?").andThen(Console::sayHello);
 
-    program.eval(null);
+    program.eval(new Console.Service(){});
   }
 }

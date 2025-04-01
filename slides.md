@@ -2664,20 +2664,6 @@ sealed interface Console<T> extends Program.Dsl<T> {
 
 ---
 
-# Sacar factor común (III)
-
-```java
-sealed interface Console<T> extends Program.Dsl<T> {
-  static void main() {
-    var program = prompt("What's your name?").andThen(Console::sayHello);
-
-    program.eval();
-  }
-}
-```
-
----
-
 # Sacar factor común (IV)
 
 ```java
