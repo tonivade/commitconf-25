@@ -176,19 +176,6 @@ public sealed interface Shape {
 
 ---
 
-# Sealed interfaces (II)
-
-```java {5}
-public sealed interface Shape {
-  record Square(int side) implements Shape {}
-  record Rectangle(int weight, int height) implements Shape {}
-  record Circle(int radius) implements Shape {}
-  non-sealed interface CustomShape extends Shape {}
-}
-```
-
----
-
 # Pattern Matching for Switch
 
 * Introducido en Java 21.
@@ -552,48 +539,6 @@ Toni
 # What's your name?
 Toni
 # Hello Toni!
-```
-
----
-
-# Un programa muy sencillo (II)
-
-```java
-static void main() {
-}
-```
-
----
-
-# Un programa muy sencillo (II)
-
-```java {2}
-static void main() {
-  System.console().println("What's your name?");
-}
-```
-
----
-
-# Un programa muy sencillo (II)
-
-```java {3}
-static void main() {
-  System.console().println("What's your name?");
-  var name = System.console().readLine();
-}
-```
-
----
-
-# Un programa muy sencillo (II)
-
-```java {4}
-static void main() {
-  System.console().println("What's your name?");
-  var name = System.console().readLine();
-  System.console().println("Hello " + name + "!");
-}
 ```
 
 ---
@@ -1553,6 +1498,24 @@ sealed interface GameDsl<T> {
   record ReadLine() implements GameDsl<String> {}
   record NextInt(int bound) implements GameDsl<Integer> {}
   record GetValue() implements GameDsl {}
+  record SetValue(int value) implements GameDsl {}
+  record AndThen(
+    GameDsl current, 
+    Function<?, GameDsl> next) 
+      implements GameDsl {}
+}
+```
+
+---
+
+# Un DSL más divertido (II)
+
+```java {5-6}
+sealed interface GameDsl<T> {
+  record WriteLine(String line) implements GameDsl<Void> {}
+  record ReadLine() implements GameDsl<String> {}
+  record NextInt(int bound) implements GameDsl<Integer> {}
+  record GetValue() implements GameDsl<Integer> {}
   record SetValue(int value) implements GameDsl {}
   record AndThen(
     GameDsl current, 
@@ -2787,14 +2750,6 @@ sealed interface State<T> extends Program.Dsl<T> {
   }
 }
 ```
-
----
-
-# Sacar factor común (V)
-
-* Pero esto es poco práctico.
-* Solo tendríamos una clase posible para usar como contexto de la aplicación.
-* Podemos hacerlo un poco más genérico.
 
 ---
 
