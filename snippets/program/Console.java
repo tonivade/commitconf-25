@@ -27,7 +27,7 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
 
   @SuppressWarnings("unchecked")
   static <S> Program<S, String> prompt(String question) {
-    return (Program<S, String>) writeLine(question).andThen(readLine());
+    return Console.<S>writeLine(question).andThen(readLine());
   }
 
   static <S> Program<S, Void> sayHello(String name) {

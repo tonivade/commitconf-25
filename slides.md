@@ -618,6 +618,17 @@ sealed interface ConsoleCps {
 
 # Primer Intento (II)
 
+```java {2-3}
+sealed interface ConsoleCps {
+  static void main() {
+  }
+}
+```
+
+---
+
+# Primer Intento (II)
+
 ```java {3}
 sealed interface ConsoleCps {
   static void main() {
@@ -1975,15 +1986,11 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (IV)
 
-```java {9}
+```java {5}
 sealed interface GameDsl<T> {
   default T eval() {
     return switch (this) {
-      case WriteLine(var line) -> {
-        System.console().println(line);
-        yield null;
-      }
-      case ReadLine _ -> System.console().readLine();
+      // ...
       case NextInt(var bound) -> ???
     };
   }
@@ -1994,15 +2001,11 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (IV)
 
-```java {9}
+```java {5}
 sealed interface GameDsl<T> {
   default T eval() {
     return switch (this) {
-      case WriteLine(var line) -> {
-        System.console().println(line);
-        yield null;
-      }
-      case ReadLine _ -> System.console().readLine();
+      // ...
       case NextInt(var bound) -> ThreadLocalRandom.current().nextInt(bound);
     };
   }
@@ -2013,15 +2016,11 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (IV)
 
-```java {10-13}
+```java {6-9}
 sealed interface GameDsl<T> {
   default T eval() {
     return switch (this) {
-      case WriteLine(var line) -> {
-        System.console().println(line);
-        yield null;
-      }
-      case ReadLine _ -> System.console().readLine();
+      // ...
       case NextInt(var bound) -> ThreadLocalRandom.current().nextInt(bound);
       case SetValue(var value) -> {
         context.set(value);
@@ -2036,15 +2035,11 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (IV)
 
-```java {11}
+```java {7}
 sealed interface GameDsl<T> {
   default T eval() {
     return switch (this) {
-      case WriteLine(var line) -> {
-        System.console().println(line);
-        yield null;
-      }
-      case ReadLine _ -> System.console().readLine();
+      // ...
       case NextInt(var bound) -> ThreadLocalRandom.current().nextInt(bound);
       case SetValue(var value) -> {
         context.set(value);
@@ -2063,11 +2058,7 @@ sealed interface GameDsl<T> {
 sealed interface GameDsl<T> {
   default T eval(Context context) {
     return switch (this) {
-      case WriteLine(var line) -> {
-        System.console().println(line);
-        yield null;
-      }
-      case ReadLine _ -> System.console().readLine();
+      // ...
       case NextInt(var bound) -> ThreadLocalRandom.current().nextInt(bound);
       case SetValue(var value) -> {
         context.set(value);
@@ -3075,7 +3066,7 @@ sealed interface Random<T> extends Program.Dsl<Void, T> {
 
 # Composición
 
-```java {3}
+```java {4}
 class Game {
   static Program<Context, Void> randomNumber() {
     // looks good
@@ -3088,7 +3079,7 @@ class Game {
 
 # Composición
 
-```java {3}
+```java {4}
 class Game {
   static Program<Context, Void> randomNumber() {
     // but it doesn't compile yet
@@ -3101,7 +3092,7 @@ class Game {
 
 # Composición
 
-```java {3}
+```java {4}
 class Game {
   static Program<Context, Void> randomNumber() {
     // now it works 🥳
@@ -3114,9 +3105,88 @@ class Game {
 
 # Composición
 
+```java {3}
+class Game {
+  static Program<Context, Boolean> checkNumber(int number) {
+    return State.<Context>getValue().map(value -> value == number);
+  }
+}
+```
+
+---
+
+# Composición
+
+```java
+sealed interface Console<T> extends Program.Dsl<Void, T> {
+  static <S> Program<S, Void> writeLine(String line) {
+    return (Program<S, Void>) new WriteLine(line);
+  }
+  static <S> Program<S, String> readLine() {
+    return (Program<S, String>) new ReadLine();
+  }
+}
+```
+
+---
+
+# Composición
+
+```java
+sealed interface Console<T> extends Program.Dsl<Void, T> {
+  static <S> Program<S, String> prompt(String question) {
+    return Console.<S>writeLine(question).andThen(readLine());
+  }
+}
+```
+
+---
+
+# Composición
+
+```java {3}
+sealed interface Console<T> extends Program.Dsl<Void, T> {
+  static void main() {
+    var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
+        .andThen(answer -> {
+          if (answer.equalsIgnoreCase("y")) {
+            return randomNumber().andThen(play());
+          }
+          return writeLine("Bye!");
+        });
+
+    program.eval(new Context());
+  }
+}
+```
+
+---
+
+# Composición
+
+```java {3}
+sealed interface Console<T> extends Program.Dsl<Void, T> {
+  static Program<Context, Void> play() {
+    return Console.<Context>prompt("Enter a number between 0 and 9")
+      .map(Integer::parseInt)
+      .andThen(Game::checkNumber)
+      .andThen(result -> {
+        if (result) {
+          return writeLine("YOU WIN!!");
+        }
+        return play();
+      });
+  }
+}
+```
+
+---
+
+# Composición
+
 * Es necesario para facilitar la composición.
 * Que es de lo que se trata todo esto.
-* Componer mini lenguajes con otros mini lenguajes.
+* Componer programas a partir de otros mini programas.
 
 ---
 
