@@ -25,7 +25,6 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
     return (Program<S, String>) new ReadLine();
   }
 
-  @SuppressWarnings("unchecked")
   static <S> Program<S, String> prompt(String question) {
     return Console.<S>writeLine(question).andThen(readLine());
   }
@@ -47,7 +46,9 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
   }
 
   static void main() {
-    var program = prompt("What's your name?").andThen(Console::sayHello);
+    var program = writeLine("What's your name?")
+      .andThen(_ -> readLine())
+      .andThen(name -> writeLine("Hello " + name + "!"));
 
     program.eval(new Console.Service(){});
   }

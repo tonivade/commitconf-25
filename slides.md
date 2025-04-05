@@ -1521,7 +1521,7 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (II)
 
-```java {5-6}
+```java {5}
 sealed interface GameDsl<T> {
   record WriteLine(String line) implements GameDsl<Void> {}
   record ReadLine() implements GameDsl<String> {}
@@ -1539,7 +1539,7 @@ sealed interface GameDsl<T> {
 
 # Un DSL más divertido (II)
 
-```java {5-6}
+```java {6}
 sealed interface GameDsl<T> {
   record WriteLine(String line) implements GameDsl<Void> {}
   record ReadLine() implements GameDsl<String> {}
@@ -2602,7 +2602,7 @@ sealed interface Console<T> extends Program.Dsl<T> {
 
 # Sacar factor común (III)
 
-```java
+```java {4-8}
 sealed interface Console<T> extends Program.Dsl<T> {
   default T handle() {
     return (T) switch (this) {
@@ -3145,7 +3145,7 @@ sealed interface Console<T> extends Program.Dsl<Void, T> {
 # Composición
 
 ```java {3}
-sealed interface Console<T> extends Program.Dsl<Void, T> {
+class Game {
   static void main() {
     var program = Console.<Context>prompt("Do you want to play a game? (y/n)")
         .andThen(answer -> {
@@ -3165,7 +3165,7 @@ sealed interface Console<T> extends Program.Dsl<Void, T> {
 # Composición
 
 ```java {3}
-sealed interface Console<T> extends Program.Dsl<Void, T> {
+class Game {
   static Program<Context, Void> play() {
     return Console.<Context>prompt("Enter a number between 0 and 9")
       .map(Integer::parseInt)
@@ -3228,6 +3228,101 @@ Cada mini lenguaje define:
   * Structured Concurrency.
   * Retry and Repeat.
 * Si tenéis interés esta en github y se llama [diesel](https://github.com/tonivade/diesel).
+
+---
+
+# Voy a hablar de mi libro :book:
+
+```java {2-3}
+interface Console {
+  void writeLine(String);
+  String readLine();
+}
+```
+
+---
+
+# Voy a hablar de mi libro :book:
+
+```java {1}
+@Diesel
+interface Console {
+  void writeLine(String);
+  String readLine();
+}
+```
+
+---
+
+# Voy a hablar de mi libro :book:
+
+```java {1}
+sealed interface ConsoleDsl<T> extends Program.Dsl<Console, T> {
+  record WriteLine(String line) implements ConsoleDsl<Void> {}
+  record ReadLine() implements ConsoleDsl<String> {}
+  static <S> Program<S, Void> writeLine(String line) {
+    return (Program<S, Void>) new WriteLine(line);
+  }
+  static <S> Program<S, String> readLine() {
+    return (Program<S, String>) new ReadLine();
+  }
+}
+```
+
+---
+
+# Voy a hablar de mi libro :book:
+
+```java
+sealed interface ConsoleDsl<T> extends Program.Dsl<Console, T> {
+  // ...
+  default T eval(Console console) {
+    return (T) switch (this) {
+      case WriteLine(var line) -> {
+        console.writeLine(line);
+        yield null;
+      }
+      case ReadLine() -> console.readLine();
+    };
+  }
+}
+```
+
+---
+
+# Voy a hablar de mi libro :book:
+
+```java {4-6}
+@Diesel
+interface Console {
+  static void main() {
+    var program = ConsoleDsl.writeLine("What's your name?")
+      .andThen(_ -> ConsoleDsl.readLine())
+      .andThen(name -> ConsoleDsl.writeLine("Hello " + name + "!"));
+  }
+}
+```
+
+---
+
+# Voy a hablar de mi libro :book:
+
+```java {5-12}
+@Diesel
+interface Console {
+  static void main() {
+    // ...
+    program.eval(new Console() {
+      public void writeLine(String line) {
+        System.console().println(line);
+      }
+      public String readLine() {
+        System.console().readLine();
+      }
+    });
+  }
+}
+```
  
 ---
 
