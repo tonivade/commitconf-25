@@ -3369,3 +3369,11 @@ interface Console {
 # ¡Gracias! :sparkling_heart:
 
 <!-- _class: lead -->
+
+---
+
+# Feedback :arrows_counterclockwise:
+
+me@tonivade.es
+
+<!-- _class: lead -->
