@@ -3216,6 +3216,13 @@ Cada mini lenguaje define:
 * Definir pequeños mini programas.
 * Componer programas mayores a partir de estos mini programas.
 * Building blocks :bricks:
+ 
+---
+
+# Qué falta? :face_with_head_bandage:
+
+* Tail recursion.
+* Mejor inferencia de tipos.
 
 ---
 
@@ -3323,13 +3330,33 @@ interface Console {
   }
 }
 ```
- 
+
 ---
 
-# Qué falta? :face_with_head_bandage:
+# Voy a hablar de mi libro :book:
 
-* Tail recursion.
-* Mejor inferencia de tipos.
+```java {5-12}
+@Diesel
+interface Console {
+  static void main() {
+    // ...
+    program.eval(new Console() {
+      public void writeLine(String line) {
+        System.console().println(line);
+      }
+      public String readLine() {
+        System.console().readLine();
+      }
+    });
+  }
+}
+```
+
+---
+
+# Voy a hablar de mi libro :book:
+
+![width:350px QR code for diesel project](images/diesel.png)
 
 ---
 
