@@ -33,6 +33,16 @@ Aprovechando las nuevas herramientas del lenguaje
 
 ---
 
+# JMAD
+
+17 de Mayo de 2025.
+
+![w:750](images/jmad.png)
+
+https://jmad.madridjug.es/tickets
+
+---
+
 # Empecemos por el principio
 
 * Qué es un DSL?
