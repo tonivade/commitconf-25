@@ -26,20 +26,10 @@ Aprovechando las nuevas herramientas del lenguaje
 * Programo en Java desde Java 1.1.
 * Actualmente trabajo en https://clarity.ai como backender.
 * Me encontraréis en:
-    - Mastodon: https://jvm.social/@tonivade
+    - Mastodon: https://mastodon.social/@tonivade
     - Github: https://github.com/tonivade
     - Blog: https://blog.tonivade.es
     - Email: me@tonivade.es
-
----
-
-# JMAD
-
-17 de Mayo de 2025.
-
-![w:750](images/jmad.png)
-
-https://jmad.madridjug.es/tickets
 
 ---
 
