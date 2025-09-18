@@ -429,7 +429,7 @@ sealed interface SqlDsl {
         .where(gt(PEOPLE.AGE, 18))
         .sorting(asc(PEOPLE.AGE));
 
-    System.console().println(query.toSql());
+    IO.println(query.toSql());
   }
 }
 ```
@@ -829,7 +829,7 @@ sealed interface ConsoleCps {
   default String eval() {
     return switch (this) {
       case WriteLine(var line, var next) -> {
-        System.console().println(line);
+        IO.println(line);
         yield next.eval();
       }
     };
@@ -846,7 +846,7 @@ sealed interface ConsoleCps {
   default String eval() {
     return switch (this) {
       case WriteLine(var line, var next) -> {
-        System.console().println(line);
+        IO.println(line);
         yield next.eval();
       }
     };
@@ -863,11 +863,11 @@ sealed interface ConsoleCps {
   default String eval() {
     return switch (this) {
       case WriteLine(var line, var next) -> {
-        System.console().println(line);
+        IO.println(line);
         yield next.eval();
       }
       case ReadLine(var next) -> {
-        var line = System.console().readLine();
+        var line = IO.readln();
         yield next.apply(line).eval();
       }
     };
@@ -884,11 +884,11 @@ sealed interface ConsoleCps {
   default String eval() {
     return switch (this) {
       case WriteLine(var line, var next) -> {
-        System.console().println(line);
+        IO.println(line);
         yield next.eval();
       }
       case ReadLine(var next) -> {
-        var line = System.console().readLine();
+        var line = IO.readln();
         yield next.apply(line).eval();
       }
     };
@@ -905,11 +905,11 @@ sealed interface ConsoleCps {
   default String eval() {
     return switch (this) {
       case WriteLine(var line, var next) -> {
-        System.console().println(line);
+        IO.println(line);
         yield next.eval();
       }
       case ReadLine(var next) -> {
-        var line = System.console().readLine();
+        var line = IO.readln();
         yield next.apply(line).eval();
       }
       case End _ -> null;
@@ -1190,7 +1190,7 @@ sealed interface ConsoleDsl {
   default String eval() {
     return switch (this) {
       case WriteLine(var line) -> {
-        System.console().println(line);
+        IO.println(line);
         yield null;
       }
     };
@@ -1207,10 +1207,10 @@ sealed interface ConsoleDsl {
   default String eval() {
     return switch (this) {
       case WriteLine(var line) -> {
-        System.console().println(line);
+        IO.println(line);
         yield null;
       }
-      case ReadLine _ -> System.console().readLine();
+      case ReadLine _ -> IO.readln();
     };
   }
 }
@@ -1225,10 +1225,10 @@ sealed interface ConsoleDsl {
   default String eval() {
     return switch (this) {
       case WriteLine(var line) -> {
-        System.console().println(line);
+        IO.println(line);
         yield null;
       }
-      case ReadLine _ -> System.console().readLine();
+      case ReadLine _ -> IO.readln();
       case AndThen(var current, var next) 
         -> next.apply(current.eval()).eval();
     };
@@ -1983,10 +1983,10 @@ sealed interface GameDsl<T> {
   default T eval() {
     return switch (this) {
       case WriteLine(var line) -> {
-        System.console().println(line);
+        IO.println(line);
         yield null;
       }
-      case ReadLine _ -> System.console().readLine();
+      case ReadLine _ -> IO.readln();
     };
   }
 }
@@ -2617,10 +2617,10 @@ sealed interface Console<T> extends Program.Dsl<T> {
   default T handle() {
     return (T) switch (this) {
       case WriteLine(var line) -> {
-        System.console().println(line);
+        IO.println(line);
         yield null;
       }
-      case ReadLine _ -> System.console().readLine();
+      case ReadLine _ -> IO.readln();
     };
   }
 }
@@ -3331,10 +3331,10 @@ interface Console {
     // ...
     program.eval(new Console() {
       public void writeLine(String line) {
-        System.console().println(line);
+        IO.println(line);
       }
       public String readLine() {
-        System.console().readLine();
+        IO.readln();
       }
     });
   }
@@ -3352,10 +3352,10 @@ interface Console {
     // ...
     program.eval(new Console() {
       public void writeLine(String line) {
-        System.console().println(line);
+        IO.println(line);
       }
       public String readLine() {
-        System.console().readLine();
+        IO.readln();
       }
     });
   }

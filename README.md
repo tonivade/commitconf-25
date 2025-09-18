@@ -25,13 +25,13 @@ Para generar las slides necesitas tener instalado npm y nodejs. Para instalarlo 
 Se pueden probar algunos snippets que contienen un main de esta manera:
 
 ```sh
-java --enable-preview snippets/Clase.java
+java snippets/Clase.java
 ```
 
 O abrir una sesión de jshell:
 
 ```sh
-jshell --enable-preview snippets/Clase.java
+jshell snippets/Clase.java
 ```
 
 Una vez dentro de la shell se puede probar la clase.
