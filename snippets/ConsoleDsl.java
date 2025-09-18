@@ -36,10 +36,10 @@ sealed interface ConsoleDsl {
   default String eval() {
     return switch (this) {
       case WriteLine(var line) -> {
-        System.console().println(line);
+        IO.println(line);
         yield null;
       }
-      case ReadLine _ -> System.console().readLine();
+      case ReadLine _ -> IO.readln();
       case AndThen(var current, var next) -> next.apply(current.eval()).eval();
     };
   }

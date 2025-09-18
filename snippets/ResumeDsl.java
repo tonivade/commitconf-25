@@ -100,6 +100,6 @@ interface ResumeDsl {
                 new Location("Madrid", "Spain"),
                 new Period(new Date(12, 2019)))));
 
-    System.console().println(me);
+    IO.println(me);
   }
 }

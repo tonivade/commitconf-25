@@ -4,11 +4,11 @@ sealed interface Console<T> extends Program.Dsl<Console.Service, T> {
   
   interface Service {
     default void writeLine(String line) {
-      System.console().println(line);
+      IO.println(line);
     }
 
     default String readLine() {
-      return System.console().readLine();
+      return IO.readln();
     }
   }
 

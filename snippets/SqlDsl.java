@@ -147,6 +147,6 @@ interface SqlDsl {
         .where(gt(PEOPLE.AGE, 18))
         .sorting(asc(PEOPLE.AGE));
 
-    System.console().println(query.toSql());
+    IO.println(query.toSql());
   }
 }

@@ -70,6 +70,6 @@ sealed interface JsonDsl {
           entry("age", JsonNull.NULL), 
           entry("old", JsonBoolean.FALSE)));
 
-    System.console().println(json.asString());
+    IO.println(json.asString());
   }
 }

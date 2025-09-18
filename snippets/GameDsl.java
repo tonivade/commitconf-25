@@ -66,10 +66,10 @@ sealed interface GameDsl<T> {
   default T eval(Context context) {
     return (T) switch (this) {
       case WriteLine(var line) -> {
-        System.console().println(line);
+        IO.println(line);
         yield null;
       }
-      case ReadLine _ -> System.console().readLine();
+      case ReadLine _ -> IO.readln();
       case NextInt(int bound) -> ThreadLocalRandom.current().nextInt(bound);
       case GetValue _ -> context.get();
       case SetValue(var value) -> {

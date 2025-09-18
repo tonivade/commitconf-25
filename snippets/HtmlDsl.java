@@ -32,6 +32,6 @@ interface HtmlDsl {
         new Head("Example"),
         new Body(new H1("Hello World!")));
 
-    System.console().println(page.toHtml());
+    IO.println(page.toHtml());
   }
 }
